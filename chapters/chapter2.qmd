@@ -1,6 +1,6 @@
 # Chapter 2: Advanced Topics
 
-This is the second chapter. Continue building your book with more chapters.
+This is the second chapter. Continue building your website with more chapters.
 
 ## Mathematical Equations
 
