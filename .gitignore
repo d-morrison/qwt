@@ -1,6 +1,8 @@
 # Quarto
 /.quarto/
-/docs/
+/_site/
+/_slides/
+/_handouts/
 *.pdf
 *.docx
 *.epub

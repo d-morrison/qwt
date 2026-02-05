@@ -35,7 +35,7 @@ jobs:
       - name: Detect changed chapters (based on rendered files)
         run: python3 .github/scripts/detect-changed-chapters.py
         env:
-          HTML_DIR: ./docs
+          HTML_DIR: ./_site
           # Set to 'true' if PR has 'no-preview-highlights' label
           DISABLE_PREVIEW_HIGHLIGHTS: ${{ contains(github.event.pull_request.labels.*.name, 'no-preview-highlights') }}
 
@@ -58,24 +58,24 @@ jobs:
           echo "${{ env.PREVIEW_CHANGED_CHAPTERS }}"
           python3 .github/scripts/highlight-html-changes.py
         env:
-          HTML_DIR: ./docs
+          HTML_DIR: ./_site
           PREVIEW_CHANGED_CHAPTERS: ${{ env.PREVIEW_CHANGED_CHAPTERS }}
 
       - name: Create DOCX with tracked changes
         run: python3 .github/scripts/create-docx-tracked-changes.py
         env:
-          DOCX_DIR: ./docs
+          DOCX_DIR: ./_site
 
       - name: Add home page banner
         run: python3 .github/scripts/add-home-banner.py
         env:
-          HTML_DIR: ./docs
+          HTML_DIR: ./_site
           PREVIEW_CHANGED_CHAPTERS: ${{ env.PREVIEW_CHANGED_CHAPTERS }}
 
       - name: Deploy PR Preview
         uses: rossjrw/pr-preview-action@main
         with:
-          source-dir: ./docs/
+          source-dir: ./_site/
           # Deploy on label changes too, not just open/reopen/synchronize
           # The 'auto' action ignores label events, so we explicitly set 'deploy' for non-closed PRs
           action: ${{ github.event.action == 'closed' && 'remove' || 'deploy' }}

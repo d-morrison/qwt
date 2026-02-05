@@ -11,24 +11,24 @@ knitr::opts_chunk$set(
 )
 ```
 
-# qbt ([Q]{.underline}uarto [B]{.underline}ook [T]{.underline}emplate)
+# qwt ([Q]{.underline}uarto [W]{.underline}ebsite [T]{.underline}emplate)
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-A template repository for creating books with [Quarto](https://quarto.org/). 
-This template provides everything you need to quickly start writing your own book.
+A template repository for creating websites with [Quarto](https://quarto.org/). 
+This template provides everything you need to quickly start writing your own website.
 
 ## Features
 
-- 📚 **Book-ready structure** with sample chapters and references
+- 🌐 **Website-ready structure** with sample chapters and references
 - 🎨 **Customizable themes** supporting light and dark modes
 - 🚀 **Automatic deployment** to GitHub Pages via GitHub Actions
 - 🔗 **Automated link checking** to ensure all URLs are reachable
-- 📄 **Multiple output formats** including HTML, PDF, EPUB, and DOCX
+- 📄 **Multiple output formats** including HTML, PDF, RevealJS slides, and DOCX
 - 📑 **Bibliography support** with BibTeX integration
 - 🔢 **Automatic numbering** of sections and cross-references
-- 💅 **Custom CSS** for styling your book
+- 💅 **Custom CSS** for styling your website
 - 🔍 **PR Preview** with change highlighting for pull requests
 - ✅ **Automated checks** including spell checking and linting
 - 🤖 **GitHub Copilot integration** with custom setup steps
@@ -57,49 +57,59 @@ To verify Quarto is installed:
 quarto --version
 ```
 
-### Customize your book
+### Customize your website
 
-1. **Edit `_quarto.yml`** to update:
-   - Book title and author
+1. **Edit `_quarto-website.yml`** to update:
+
+   - Website title and site URL
    - Repository URL
-   - Chapter list
+   - Navigation menu items
    - Theme and styling options
 
-2. **Modify `index.qmd`** to create your book's homepage/introduction
+2. **Modify `index.qmd`** to create your website's homepage
 
-3. **Edit or create chapters** (`.qmd` files):
-   - Modify `chapter1.qmd` and `chapter2.qmd` as needed
-   - Create new chapters and add them to the `chapters` list in `_quarto.yml`
+3. **Edit or create pages** (`.qmd` files):
+
+   - Modify files in the `chapters/` directory as needed
+   - Create new pages and add them to the navigation menu in `_quarto-website.yml`
 
 4. **Add references** to `references.bib` in BibTeX format
 
 5. **Customize styling** in `styles.css`
 
-## Building the book
+## Building the website
 
 ### Local preview
 
-To preview your book with live reload during development:
+To preview your website with live reload during development:
 
 ```bash
 quarto preview
 ```
 
-This will open your book in a web browser and automatically refresh when you make changes.
+This will open your website in a web browser and automatically refresh when you make changes.
 
-### Render the book
+### Render the website
 
-To render the complete book:
+To render the complete website:
 
 ```bash
 quarto render
 ```
 
-The output will be generated in the `docs/` directory.
+The output will be generated in the `_site/` directory.
+
+### Multiple output formats
+
+This template supports multiple output formats through Quarto profiles:
+
+- **Website** (default): `quarto render` or `quarto render --profile website`
+- **RevealJS slides**: `quarto render --profile revealjs` (output in `_slides/`)
+- **PDF handouts**: `quarto render --profile handout` (output in `_handouts/`)
 
 ## Publishing to GitHub Pages
 
-This template includes a GitHub Actions workflow (`.github/workflows/publish.yml`) that automatically builds and publishes your book to GitHub Pages when you push to the main branch.
+This template includes a GitHub Actions workflow (`.github/workflows/publish.yml`) that automatically builds and publishes your website to GitHub Pages when you push to the main branch.
 
 ### Setup steps:
 
@@ -110,13 +120,13 @@ This template includes a GitHub Actions workflow (`.github/workflows/publish.yml
 2. **Push to main branch**:
    ```bash
    git add .
-   git commit -m "Initial book setup"
+   git commit -m "Initial website setup"
    git push origin main
    ```
 
 3. **Wait for the workflow** to complete (check the Actions tab)
 
-4. **Access your book** at: `https://YOUR-USERNAME.github.io/YOUR-REPO/`
+4. **Access your website** at: `https://YOUR-USERNAME.github.io/YOUR-REPO/`
 
 ## GitHub Actions Workflows
 
@@ -124,7 +134,7 @@ This template includes several automated workflows to enhance your development e
 
 ### 🚀 Publish Workflow (`publish.yml`)
 
-Automatically builds and deploys your book to GitHub Pages when you push to the main branch.
+Automatically builds and deploys your website to GitHub Pages when you push to the main branch.
 
 **Triggers:** Push to main branch, manual dispatch
 
@@ -187,10 +197,14 @@ Validates that all books and articles in bibliography files meet DOI requirement
 
 ```
 .
-├── _quarto.yml              # Main configuration file
-├── index.qmd                # Book homepage/introduction
-├── chapter1.qmd             # Sample chapter 1
-├── chapter2.qmd             # Sample chapter 2
+├── _quarto.yml              # Main configuration file (profile-based)
+├── _quarto-website.yml      # Website-specific configuration
+├── _quarto-revealjs.yml     # RevealJS slides configuration
+├── _quarto-handout.yml      # PDF handout configuration
+├── index.qmd                # Website homepage
+├── chapters/                # Chapter files
+│   ├── chapter1.qmd         # Sample chapter 1
+│   └── chapter2.qmd         # Sample chapter 2
 ├── references.qmd           # References page
 ├── references.bib           # BibTeX bibliography
 ├── styles.css               # Custom CSS styles
@@ -222,10 +236,10 @@ Validates that all books and articles in bibliography files meet DOI requirement
 This template includes two GitHub Actions workflows:
 
 ### Publishing Workflow (`publish.yml`)
-Automatically builds and deploys your book to GitHub Pages when you push to the main branch.
+Automatically builds and deploys your website to GitHub Pages when you push to the main branch.
 
 ### Link Checker Workflow (`check-links.yml`)
-Automatically checks that all URLs in your book are reachable:
+Automatically checks that all URLs in your website are reachable:
 
 - **Runs on**: Push to main, pull requests, weekly schedule (Mondays at 9:00 UTC), and manual trigger
 - **Checks**: All links in `.qmd`, `.md`, and `.html` files
@@ -288,7 +302,7 @@ For more details, see the [Quarto documentation](https://quarto.org/docs/guide/)
 
 ### Changing themes
 
-Edit the `format.html.theme` section in `_quarto.yml`:
+Edit the `format.html.theme` section in `_quarto-website.yml`:
 
 ```yaml
 format:
@@ -298,19 +312,23 @@ format:
       dark: darkly  # Try: darkly, cyborg, slate, superhero, etc.
 ```
 
-### Adding chapters
+### Adding pages
 
-1. Create a new `.qmd` file (e.g., `chapter3.qmd`)
-2. Add it to the `chapters` list in `_quarto.yml`:
+1. Create a new `.qmd` file (e.g., `chapters/chapter3.qmd`)
+2. Add it to the navigation menu in `_quarto-website.yml`:
 
 ```yaml
-book:
-  chapters:
-    - index.qmd
-    - chapter1.qmd
-    - chapter2.qmd
-    - chapter3.qmd  # Your new chapter
-    - references.qmd
+website:
+  navbar:
+    left:
+      - text: "Chapters"
+        menu:
+          - text: "Chapter 1: Introduction"
+            href: chapters/chapter1.qmd
+          - text: "Chapter 2: Advanced Topics"
+            href: chapters/chapter2.qmd
+          - text: "Chapter 3: Your New Chapter"
+            href: chapters/chapter3.qmd
 ```
 
 ### Custom CSS
