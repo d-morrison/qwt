@@ -1,3 +1,15 @@
+---
+title: "References"
+format:
+  html: default
+  revealjs:
+    output-file: references-slides.html
+  pdf:
+    output-file: references-handout.pdf
+  docx:
+    output-file: references.docx
+---
+
 # References {.unnumbered}
 
 ::: {#refs}

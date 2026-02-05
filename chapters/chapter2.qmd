@@ -1,3 +1,15 @@
+---
+title: "Chapter 2: Advanced Topics"
+format:
+  html: default
+  revealjs:
+    output-file: chapter2-slides.html
+  pdf:
+    output-file: chapter2-handout.pdf
+  docx:
+    output-file: chapter2.docx
+---
+
 # Chapter 2: Advanced Topics
 
 This is the second chapter. Continue building your website with more chapters.

@@ -1,5 +1,13 @@
 ---
 title: "Quarto Website Template"
+format:
+  html: default
+  revealjs:
+    output-file: index-slides.html
+  pdf:
+    output-file: index-handout.pdf
+  docx:
+    output-file: index.docx
 ---
 
 # Welcome {.unnumbered}

@@ -1,3 +1,15 @@
+---
+title: "Chapter 1: Introduction"
+format:
+  html: default
+  revealjs:
+    output-file: chapter1-slides.html
+  pdf:
+    output-file: chapter1-handout.pdf
+  docx:
+    output-file: chapter1.docx
+---
+
 # Chapter 1: Introduction
 
 This is the first chapter of your website. Replace this content with your own.
