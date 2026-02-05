@@ -1,22 +1,38 @@
 # Document Generation Metadata {.unnumbered}
 
 ::: {.content-visible when-format="docx"}
-This document was generated from git commit information. Use this information when transferring edits from this DOCX file back to the Quarto source files to set up the PR correctly and account for any commits added since this document was generated.
+This document was generated from the following git commit:
 
-**To enable automatic git metadata:**
+```{r}
+#| echo: false
+#| output: asis
 
-1. Install R with the `knitr` and `rmarkdown` packages
-2. Add an R code chunk to this file that retrieves git information using `system()` calls
-3. See the [UCD-SERG lab-manual appendix-document-metadata.qmd](https://github.com/UCD-SERG/lab-manual/blob/main/appendix-document-metadata.qmd) for an example implementation
+# Get git branch
+branch <- system("git rev-parse --abbrev-ref HEAD 2>/dev/null", intern = TRUE)
+if (length(branch) == 0 || branch == "") branch <- "unknown"
 
-**Manual git information:**
+# Get short commit hash
+commit_short <- system("git rev-parse --short HEAD 2>/dev/null", intern = TRUE)
+if (length(commit_short) == 0 || commit_short == "") commit_short <- "unknown"
 
-You can manually add git commit information here when generating DOCX files:
+# Get full commit hash
+commit_full <- system("git rev-parse HEAD 2>/dev/null", intern = TRUE)
+if (length(commit_full) == 0 || commit_full == "") commit_full <- "unknown"
 
-- **Branch:** [branch name]
-- **Commit:** [short hash]
-- **Full commit hash:** [full hash]
-- **Commit date:** [date]
+# Get commit date
+commit_date <- "git show -s --format=%ci HEAD 2>/dev/null" |> 
+  system(intern = TRUE)
+if (length(commit_date) == 0 || commit_date == "") commit_date <- "unknown"
+
+# Print formatted output
+cat("- **Branch:**", branch, "\n")
+cat("- **Commit:**", commit_short, "\n")
+cat("- **Full commit hash:**", commit_full, "\n")
+cat("- **Commit date:**", commit_date, "\n")
+```
+
+When transferring edits from this DOCX file back to the Quarto source files,
+use this commit information to set up the PR correctly and account for any commits that have been added since this document was generated.
 :::
 
 
