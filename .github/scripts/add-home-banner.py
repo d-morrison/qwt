@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Script to add a banner to the home page linking to changed chapters.
+Script to add a banner to each page linking to its alternative formats.
 """
 
 import os
@@ -9,54 +9,55 @@ import json
 import re
 from pathlib import Path
 
-def add_home_page_banner(index_html_path, changed_chapters):
-    """Add a banner to the home page with links to changed chapters."""
-    with open(index_html_path, 'r', encoding='utf-8') as f:
+def add_page_banner(html_path, html_dir):
+    """Add a banner to a page with links to its DOCX and RevealJS versions."""
+    with open(html_path, 'r', encoding='utf-8') as f:
         html = f.read()
     
-    if not changed_chapters:
-        # No changes detected - show a different message
-        banner = '''
-<div class="preview-home-changes-banner">
+    # Calculate the relative path from html_dir
+    try:
+        rel_path = html_path.relative_to(html_dir)
+    except ValueError:
+        print(f"Warning: {html_path} is not under {html_dir}", file=sys.stderr)
+        return
+    
+    # Get the stem (filename without extension)
+    stem = html_path.stem
+    
+    # Construct paths to alternative formats relative to the HTML file's directory
+    docx_file = f"{stem}.docx"
+    docx_tracked_file = f"{stem}-tracked-changes.docx"
+    slides_file = f"{stem}-slides.html"
+    
+    # Build the banner with links to alternative formats
+    links = []
+    
+    # Check if DOCX file exists (it should for all pages)
+    docx_path = html_path.parent / docx_file
+    if docx_path.exists():
+        links.append(f'<a href="{docx_file}" download>📄 MS Word</a>')
+    
+    # Check if tracked changes DOCX exists
+    docx_tracked_path = html_path.parent / docx_tracked_file
+    if docx_tracked_path.exists():
+        links.append(f'<a href="{docx_tracked_file}" download>📝 MS Word (tracked changes)</a>')
+    
+    # Check if slides file exists
+    slides_path = html_path.parent / slides_file
+    if slides_path.exists():
+        links.append(f'<a href="{slides_file}">🎞️ Slides</a>')
+    
+    # Only add banner if there are alternative formats available
+    if not links:
+        print(f"  No alternative formats found for {rel_path}")
+        return
+    
+    links_html = ' | '.join(links)
+    
+    banner = f'''
+<div class="preview-page-formats-banner" style="background-color: #e7f3ff; border: 1px solid #b3d9ff; border-radius: 4px; padding: 12px; margin: 16px 0;">
     <p style="margin: 0;">
-        <strong>📋 Changes in this PR:</strong> No changes were detected in the rendered book.
-    </p>
-</div>
-'''
-    else:
-        # Create the banner HTML with links to changed chapters
-        chapter_links = []
-        for chapter_id in changed_chapters:
-            # Convert chapter ID to readable title
-            # E.g., "01-culture-and-conduct" -> "Culture and conduct"
-            # First try to extract the title from the actual HTML file
-            chapter_html = index_html_path.parent / f"{chapter_id}.html"
-            title = chapter_id
-            if chapter_html.exists():
-                with open(chapter_html, 'r', encoding='utf-8') as cf:
-                    content = cf.read()
-                    # Look for the h1 heading
-                    h1_match = re.search(r'<h1[^>]*>.*?<span class="chapter-number">(\d+)</span>\s*(.*?)</h1>', content, re.DOTALL)
-                    if h1_match:
-                        title = h1_match.group(2).strip()
-                        chapter_num = h1_match.group(1)
-                        title = f"{chapter_num}. {title}"
-            
-            chapter_links.append(f'<a href="{chapter_id}.html">{title}</a>')
-        
-        links_html = ', '.join(chapter_links)
-        
-        # Add DOCX link to the banner
-        docx_filename = "UCD-SeRG-Lab-Manual-tracked-changes.docx"
-        
-        banner = f'''
-<div class="preview-home-changes-banner">
-    <p style="margin: 0;">
-        <strong>📋 Changes in this PR:</strong> The following chapters have been modified: {links_html}
-        <br>
-        <strong>📄 DOCX with tracked changes:</strong> <a href="{docx_filename}" download>Download {docx_filename}</a>
-        <br>
-        <strong>💡 Tip:</strong> If change highlighting is glitchy, add the <code>no-preview-highlights</code> label to this PR to disable it.
+        <strong>📋 Other Formats:</strong> {links_html}
     </p>
 </div>
 '''
@@ -68,41 +69,41 @@ def add_home_page_banner(index_html_path, changed_chapters):
         html = html[:insertion_point] + banner + html[insertion_point:]
         
         # Write back
-        with open(index_html_path, 'w', encoding='utf-8') as f:
+        with open(html_path, 'w', encoding='utf-8') as f:
             f.write(html)
         
-        print(f"Added home page banner with {len(changed_chapters)} changed chapter(s)")
+        print(f"  Added format banner to {rel_path} with {len(links)} format(s)")
     else:
-        print("Could not find insertion point for home page banner", file=sys.stderr)
+        print(f"  Could not find insertion point for {rel_path}", file=sys.stderr)
 
 def main():
     # Get the HTML directory
-    html_dir = Path(os.getenv('HTML_DIR', './docs'))
+    html_dir = Path(os.getenv('HTML_DIR', './_site'))
     
-    # Read changed chapters from JSON file or environment variable
-    changed_chapters_file = html_dir / 'changed-chapters.json'
-    changed_chapters = []
+    if not html_dir.exists():
+        print(f"HTML directory {html_dir} does not exist", file=sys.stderr)
+        return
     
-    if changed_chapters_file.exists():
-        with open(changed_chapters_file, 'r') as f:
-            data = json.load(f)
-            changed_chapters = data.get('changed_chapters', [])
-        print(f"Loaded {len(changed_chapters)} changed chapter(s) from JSON file")
-    else:
-        # Try to get from environment variable
-        env_chapters = os.getenv('PREVIEW_CHANGED_CHAPTERS', '').strip()
-        if env_chapters:
-            changed_chapters = [ch.strip() for ch in env_chapters.split('\n') if ch.strip()]
-            print(f"Got {len(changed_chapters)} changed chapter(s) from environment variable")
-        else:
-            print("No changed chapters found")
+    print("="*60)
+    print("Adding Format Banners to Pages")
+    print("="*60)
     
-    # Add banner to ALL HTML files in the directory, not just index.html
-    html_files = list(html_dir.glob('*.html'))
-    print(f"Found {len(html_files)} HTML files to process")
+    # Find all HTML files recursively
+    html_files = list(html_dir.rglob('*.html'))
     
+    if not html_files:
+        print(f"No HTML files found in {html_dir}")
+        return
+    
+    print(f"\nFound {len(html_files)} HTML file(s) to process")
+    
+    # Process each HTML file
     for html_file in html_files:
-        add_home_page_banner(html_file, changed_chapters)
+        add_page_banner(html_file, html_dir)
+    
+    print("\n" + "="*60)
+    print("Format banner addition complete")
+    print("="*60)
 
 if __name__ == '__main__':
     main()
