@@ -176,7 +176,7 @@ def main():
     
     # Also create a JSON file for easy access
     import json
-    with open('./docs/changed-chapters.json', 'w') as f:
+    with open('./_site/changed-chapters.json', 'w') as f:
         json.dump({
             'changed_chapters': changed_chapters,
             'count': len(changed_chapters)
