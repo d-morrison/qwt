@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Script to add a banner to each page linking to its alternative formats.
+Script to add banners to pages with links to alternative formats and changed pages.
 """
 
 import os
@@ -9,8 +9,30 @@ import json
 import re
 from pathlib import Path
 
-def add_page_banner(html_path, html_dir):
-    """Add a banner to a page with links to its DOCX and RevealJS versions."""
+def get_page_title(html_path):
+    """Extract the page title from an HTML file."""
+    try:
+        with open(html_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+            # Look for h1 heading with or without chapter number
+            h1_match = re.search(r'<h1[^>]*>(.*?)</h1>', content, re.DOTALL)
+            if h1_match:
+                title_html = h1_match.group(1)
+                # Remove chapter number span if present
+                title_html = re.sub(r'<span class="chapter-number">(\d+)</span>\s*', '', title_html)
+                # Strip HTML tags
+                title = re.sub(r'<[^>]+>', '', title_html).strip()
+                return title
+            # Fall back to title tag
+            title_match = re.search(r'<title>(.*?)</title>', content)
+            if title_match:
+                return title_match.group(1).strip()
+    except Exception as e:
+        print(f"  Warning: Could not extract title from {html_path}: {e}", file=sys.stderr)
+    return html_path.stem
+
+def add_page_banner(html_path, html_dir, changed_pages):
+    """Add banners to a page with links to its alternative formats and changed pages."""
     with open(html_path, 'r', encoding='utf-8') as f:
         html = f.read()
     
@@ -24,20 +46,56 @@ def add_page_banner(html_path, html_dir):
     # Get the stem (filename without extension)
     stem = html_path.stem
     
+    banners = []
+    
+    # Banner 1: Changed pages (if any exist)
+    if changed_pages:
+        page_links = []
+        for page_info in changed_pages:
+            page_rel_path = page_info['rel_path']
+            page_html_path = html_dir / page_rel_path
+            
+            # Calculate relative link from current page to changed page
+            try:
+                # Get relative path from current HTML to changed HTML
+                current_dir = html_path.parent
+                link_path = os.path.relpath(page_html_path, current_dir)
+                
+                # Get tracked changes DOCX path
+                tracked_docx_name = f"{page_info['stem']}-tracked-changes.docx"
+                tracked_docx_path = page_html_path.parent / tracked_docx_name
+                
+                if tracked_docx_path.exists():
+                    # Make tracked DOCX link relative to current page
+                    tracked_docx_link = os.path.relpath(tracked_docx_path, current_dir)
+                    page_links.append(
+                        f'<a href="{link_path}">{page_info["title"]}</a> '
+                        f'(<a href="{tracked_docx_link}" download>tracked changes</a>)'
+                    )
+            except Exception as e:
+                print(f"  Warning: Could not create link to {page_rel_path}: {e}", file=sys.stderr)
+        
+        if page_links:
+            links_html = ', '.join(page_links)
+            banners.append(f'''
+<div class="preview-changes-banner" style="background-color: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 12px; margin: 16px 0;">
+    <p style="margin: 0;">
+        <strong>📋 Changes in this PR:</strong> {links_html}
+        <br>
+        <strong>💡 Tip:</strong> If change highlighting is glitchy, add the <code>no-preview-highlights</code> label to this PR to disable it.
+    </p>
+</div>
+''')
+    
+    # Banner 2: This page's alternative formats
     # Construct paths to alternative formats relative to the HTML file's directory
-    docx_file = f"{stem}.docx"
     docx_tracked_file = f"{stem}-tracked-changes.docx"
     slides_file = f"{stem}-slides.html"
     
     # Build the banner with links to alternative formats
     links = []
     
-    # Check if DOCX file exists (it should for all pages)
-    docx_path = html_path.parent / docx_file
-    if docx_path.exists():
-        links.append(f'<a href="{docx_file}" download>📄 MS Word</a>')
-    
-    # Check if tracked changes DOCX exists
+    # Check if tracked changes DOCX exists - prioritize this over regular DOCX
     docx_tracked_path = html_path.parent / docx_tracked_file
     if docx_tracked_path.exists():
         links.append(f'<a href="{docx_tracked_file}" download>📝 MS Word (tracked changes)</a>')
@@ -47,32 +105,34 @@ def add_page_banner(html_path, html_dir):
     if slides_path.exists():
         links.append(f'<a href="{slides_file}">🎞️ Slides</a>')
     
-    # Only add banner if there are alternative formats available
-    if not links:
-        print(f"  No alternative formats found for {rel_path}")
-        return
-    
-    links_html = ' | '.join(links)
-    
-    banner = f'''
+    if links:
+        links_html = ' | '.join(links)
+        banners.append(f'''
 <div class="preview-page-formats-banner" style="background-color: #e7f3ff; border: 1px solid #b3d9ff; border-radius: 4px; padding: 12px; margin: 16px 0;">
     <p style="margin: 0;">
         <strong>📋 Other Formats:</strong> {links_html}
     </p>
 </div>
-'''
+''')
+    
+    # Only modify if we have at least one banner
+    if not banners:
+        print(f"  No banners to add for {rel_path}")
+        return
+    
+    combined_banners = '\n'.join(banners)
     
     # Find insertion point (after <main> tag)
     main_match = re.search(r'(<main[^>]*>)', html)
     if main_match:
         insertion_point = main_match.end()
-        html = html[:insertion_point] + banner + html[insertion_point:]
+        html = html[:insertion_point] + combined_banners + html[insertion_point:]
         
         # Write back
         with open(html_path, 'w', encoding='utf-8') as f:
             f.write(html)
         
-        print(f"  Added format banner to {rel_path} with {len(links)} format(s)")
+        print(f"  Added {len(banners)} banner(s) to {rel_path}")
     else:
         print(f"  Could not find insertion point for {rel_path}", file=sys.stderr)
 
@@ -88,6 +148,33 @@ def main():
     print("Adding Format Banners to Pages")
     print("="*60)
     
+    # Find all pages with tracked changes DOCX files (these are the changed pages)
+    changed_pages = []
+    for tracked_docx in html_dir.rglob('*-tracked-changes.docx'):
+        # Get the corresponding HTML file
+        stem = tracked_docx.stem.replace('-tracked-changes', '')
+        html_file = tracked_docx.parent / f"{stem}.html"
+        
+        if html_file.exists():
+            try:
+                rel_path = html_file.relative_to(html_dir)
+                title = get_page_title(html_file)
+                changed_pages.append({
+                    'rel_path': rel_path,
+                    'stem': stem,
+                    'title': title,
+                    'html_path': html_file
+                })
+            except Exception as e:
+                print(f"  Warning: Could not process {html_file}: {e}", file=sys.stderr)
+    
+    if changed_pages:
+        print(f"\nFound {len(changed_pages)} changed page(s):")
+        for page in changed_pages:
+            print(f"  - {page['title']} ({page['rel_path']})")
+    else:
+        print("\nNo changed pages detected (no tracked-changes DOCX files found)")
+    
     # Find all HTML files recursively
     html_files = list(html_dir.rglob('*.html'))
     
@@ -95,11 +182,11 @@ def main():
         print(f"No HTML files found in {html_dir}")
         return
     
-    print(f"\nFound {len(html_files)} HTML file(s) to process")
+    print(f"\nProcessing {len(html_files)} HTML file(s)")
     
     # Process each HTML file
     for html_file in html_files:
-        add_page_banner(html_file, html_dir)
+        add_page_banner(html_file, html_dir, changed_pages)
     
     print("\n" + "="*60)
     print("Format banner addition complete")
