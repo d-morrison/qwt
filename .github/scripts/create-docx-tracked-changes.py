@@ -169,7 +169,7 @@ def create_docx_with_tracked_changes(old_docx_path, new_docx_path, output_path):
         except:
             return False
 
-def process_docx_file(new_docx_path, base_docx_dir):
+def process_docx_file(new_docx_path, base_docx_dir, docx_dir):
     """Process a single DOCX file: fetch old version, compare, and create tracked changes version."""
     print(f"Processing {new_docx_path}...")
     
@@ -177,17 +177,25 @@ def process_docx_file(new_docx_path, base_docx_dir):
         print("  No base DOCX directory available")
         return
     
-    # Get the relative path and construct base path
+    # Get the relative path from the docx_dir
     new_path = Path(new_docx_path)
-    relative_path = new_path.name  # Just the filename for now
+    docx_dir_path = Path(docx_dir)
+    
+    try:
+        relative_path = new_path.relative_to(docx_dir_path)
+    except ValueError:
+        print(f"  Error: {new_path} is not under {docx_dir_path}")
+        return
+    
+    # Construct base path using the same relative path
     base_path = Path(base_docx_dir) / relative_path
     
     if not base_path.exists():
         print(f"  Base DOCX not found: {base_path}")
+        print(f"  (This is normal for new pages)")
         return
     
-    # Create output path with tracked changes
-    # For the main book DOCX, create UCD-SeRG-Lab-Manual-tracked-changes.docx
+    # Create output path with tracked changes in the same directory structure
     output_path = new_path.parent / f"{new_path.stem}-tracked-changes.docx"
     
     print(f"  Output will be: {output_path}")
@@ -200,7 +208,7 @@ def process_docx_file(new_docx_path, base_docx_dir):
 
 def main():
     # Get the local DOCX directory
-    docx_dir = os.getenv('DOCX_DIR', './docs')
+    docx_dir = os.getenv('DOCX_DIR', './_site')
     
     print("="*60)
     print("DOCX Tracked Changes Creation")
@@ -220,8 +228,11 @@ def main():
     else:
         print(f"✓ Base DOCX checked out to {base_docx_dir}")
     
-    # Find all DOCX files in the output directory
-    docx_files = list(Path(docx_dir).glob("*.docx"))
+    # Find all DOCX files recursively in the output directory
+    docx_files = list(Path(docx_dir).rglob("*.docx"))
+    
+    # Filter out tracked-changes files from the list
+    docx_files = [f for f in docx_files if '-tracked-changes' not in f.stem]
     
     if not docx_files:
         print("\n⚠ No DOCX files found in output directory")
@@ -229,12 +240,17 @@ def main():
     
     print(f"\n2. Found {len(docx_files)} DOCX file(s) to process:")
     for docx_file in docx_files:
-        print(f"   - {docx_file.name}")
+        # Show relative path from docx_dir for clarity
+        try:
+            rel_path = docx_file.relative_to(Path(docx_dir))
+            print(f"   - {rel_path}")
+        except ValueError:
+            print(f"   - {docx_file.name}")
     
     # Process each DOCX file
     print("\n3. Creating tracked changes versions:")
     for docx_file in docx_files:
-        process_docx_file(docx_file, base_docx_dir)
+        process_docx_file(docx_file, base_docx_dir, docx_dir)
     
     print("\n" + "="*60)
     print("DOCX processing complete")
