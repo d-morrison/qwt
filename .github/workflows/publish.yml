@@ -28,6 +28,7 @@ jobs:
           packages: |
             any::knitr
             any::rmarkdown
+            any::tibble
 
       - name: Render
         uses: quarto-dev/quarto-actions/render@v2
