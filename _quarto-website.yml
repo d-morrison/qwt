@@ -51,8 +51,6 @@ format:
     number-sections: true
     number-depth: 3
     df-print: paged
-    date: last-modified
-    date-format: "[Last modified:] YYYY-MM-DD HH:mm:ss (z)"
   docx:
     number-sections: true
     number-depth: 3
