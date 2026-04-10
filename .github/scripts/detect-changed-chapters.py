@@ -86,7 +86,7 @@ def files_differ(file1, file2):
 
 def main():
     # Get the local rendered files directory
-    rendered_dir = Path(os.getenv('HTML_DIR', './docs'))
+    rendered_dir = Path(os.getenv('HTML_DIR', './_site'))
     
     if not rendered_dir.exists():
         print("Rendered files directory does not exist yet")
@@ -149,7 +149,7 @@ def main():
         
         # Still create the JSON file for home banner
         import json
-        with open('./docs/changed-chapters.json', 'w') as f:
+        with open('./_site/changed-chapters.json', 'w') as f:
             json.dump({
                 'changed_chapters': [],
                 'count': 0

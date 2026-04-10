@@ -29,6 +29,10 @@ website:
             href: chapters/chapter1.qmd
           - text: "Chapter 2: Advanced Topics"
             href: chapters/chapter2.qmd
+    right:
+      - icon: github
+        href: https://github.com/UCD-SERG/qwt
+        aria-label: GitHub
 
 format:
   html:
