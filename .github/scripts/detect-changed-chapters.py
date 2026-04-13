@@ -87,7 +87,7 @@ def files_differ(file1, file2):
 
 def main():
     # Get the local rendered files directory
-    rendered_dir = Path(os.getenv('HTML_DIR', './docs'))
+    rendered_dir = Path(os.getenv('HTML_DIR', './_site'))
     
     if not rendered_dir.exists():
         print("Rendered files directory does not exist yet")
