@@ -46,35 +46,35 @@
     "href": "index-slides.html#about-this-website",
     "title": "Quarto Website Template",
     "section": "0.1 About this website",
-    "text": "0.1 About this website\nThis website is built with Quarto, an open-source scientific and technical publishing system. You can use Quarto to create books, websites, blogs, presentations, and more from markdown files."
+    "text": "0.1 About this website"
   },
   {
     "objectID": "index-slides.html#getting-started",
     "href": "index-slides.html#getting-started",
     "title": "Quarto Website Template",
     "section": "0.2 Getting Started",
-    "text": "0.2 Getting Started\nTo use this template:\n\nUpdate the configuration: Edit _quarto-website.yml to change the website title, site URL, and navigation menu.\nAdd your content: Create new .qmd files for each page and add them to the navigation menu in _quarto-website.yml.\nCustomize the style: Modify styles.css to change the appearance of your website.\nAdd references: Update references.bib with your citations."
+    "text": "0.2 Getting Started"
   },
   {
     "objectID": "index-slides.html#building-the-website",
     "href": "index-slides.html#building-the-website",
     "title": "Quarto Website Template",
     "section": "0.3 Building the website",
-    "text": "0.3 Building the website\nTo render the website locally:\nquarto render\nTo preview the website with live reload:\nquarto preview\nThe rendered output will be in the _site/ directory, which can be published to GitHub Pages."
+    "text": "0.3 Building the website"
   },
   {
     "objectID": "index-slides.html#publishing-to-github-pages",
     "href": "index-slides.html#publishing-to-github-pages",
     "title": "Quarto Website Template",
     "section": "0.4 Publishing to GitHub Pages",
-    "text": "0.4 Publishing to GitHub Pages\nThis template includes a GitHub Actions workflow that automatically builds and publishes your website to GitHub Pages when you push to the main branch.\nTo enable GitHub Pages:\n\nGo to your repository settings\nNavigate to “Pages” in the left sidebar\nUnder “Build and deployment”, set Source to “GitHub Actions”\nPush your changes to the main branch\nThe workflow will automatically build and deploy your website\n\nYour website will be available at https://YOUR-USERNAME.github.io/YOUR-REPO/"
+    "text": "0.4 Publishing to GitHub Pages"
   },
   {
     "objectID": "index-slides.html#license",
     "href": "index-slides.html#license",
     "title": "Quarto Website Template",
     "section": "0.5 License",
-    "text": "0.5 License\nAdd your license information here."
+    "text": "0.5 License"
   },
   {
     "objectID": "index-slides.html#references",
@@ -102,7 +102,7 @@
     "href": "chapters/chapter1-slides.html#subsection-1.1.1",
     "title": "Chapter 1: Introduction",
     "section": "\n1.1 Subsection 1.1.1",
-    "text": "1.1 Subsection 1.1.1\nYou can include:\n\n\nLists like this one\n\nItalic and bold text\nCode snippets\nLinks: Quarto Documentation"
+    "text": "1.1 Subsection 1.1.1"
   },
   {
     "objectID": "chapters/chapter2.html",
