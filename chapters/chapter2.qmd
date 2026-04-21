@@ -10,11 +10,9 @@ format:
     output-file: chapter2.docx
 ---
 
-# Chapter 2: Advanced Topics
-
 This is the second chapter. Continue building your website with more chapters.
 
-## Mathematical Equations
+# Mathematical Equations
 
 You can include mathematical equations using LaTeX syntax:
 
@@ -26,7 +24,7 @@ $$
 \int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
 $$
 
-## Tables
+# Tables
 
 | Column 1 | Column 2 | Column 3 |
 |----------|----------|----------|
@@ -35,7 +33,7 @@ $$
 
 : Example table caption {#tbl-example}
 
-## Figures
+# Figures
 
 You can include images by placing them in the `images/` directory:
 
@@ -45,7 +43,7 @@ You can include images by placing them in the `images/` directory:
 
 Then reference the figure in text using `@fig-example`.
 
-## Callouts
+# Callouts
 
 ::: {.callout-note}
 This is a note callout. Use it to highlight important information.
@@ -63,8 +61,7 @@ This is a warning callout. Alert readers to potential issues.
 This is an important callout. Emphasize critical information.
 :::
 
-## References {.unnumbered}
+# References {.unnumbered}
 
 ::: {#refs}
 :::
-
