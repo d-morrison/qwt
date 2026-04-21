@@ -12,6 +12,9 @@ on:
 
 jobs:
   build-deploy:
+    if: |
+      (github.event.action != 'labeled' && github.event.action != 'unlabeled') ||
+      contains(fromJson('["revealjs","pdf","docx","no-preview-highlights"]'), github.event.label.name)
     runs-on: ubuntu-latest
     permissions:
       contents: write
