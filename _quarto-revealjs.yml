@@ -16,7 +16,7 @@ format:
     number-depth: 2
     slide-number: true
     shift-heading-level-by: 0
-    slide-level: 1
+    slide-level: 2
     scrollable: true
     echo: true
     margin: 0.0
