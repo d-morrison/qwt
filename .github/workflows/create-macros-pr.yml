@@ -1,0 +1,52 @@
+name: Create macros PR
+
+on:
+  push:
+    branches:
+      - copilot/add-submodule-macros
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Create PR in d-morrison/macros
+        env:
+          GH_TOKEN: ${{ secrets.MACROS_REPO_PAT }}
+        run: |
+          if [ -z "${GH_TOKEN:-}" ]; then
+            echo "MACROS_REPO_PAT is not set; cannot create PR."
+            exit 1
+          fi
+
+          existing=$(gh pr list \
+            --repo d-morrison/macros \
+            --head copilot/add-summary-stat-macros \
+            --base main \
+            --json number \
+            --jq '.[0].number')
+
+          if [ -n "$existing" ]; then
+            echo "PR #$existing already exists — skipping."
+            exit 0
+          fi
+
+          body=$(printf '%s\n' \
+            'Adds commonly-used summary statistic macros that were missing:' \
+            '' \
+            '- `\Cort`, `\Cor{x}`, `\Corf{x}`, `\Cors{x}{y}` -- correlation operator and functions' \
+            '- `\hcort`, `\hCor{x}`, `\hCorf{x}`, `\hCors{x}{y}` -- estimated (hat) correlation' \
+            '- `\med`, `\medf{x}` -- median operator and function' \
+            '- `\IQR`, `\IQRf{x}` -- interquartile range operator and function' \
+            '' \
+            'These follow the same naming conventions as the existing `\Var`, `\Cov`, and `\SD` macros.')
+
+          gh pr create \
+            --repo d-morrison/macros \
+            --base main \
+            --head copilot/add-summary-stat-macros \
+            --title "feat: add correlation, median, and IQR macros" \
+            --body "$body"
+
+          echo "PR created successfully."
