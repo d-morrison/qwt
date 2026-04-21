@@ -141,7 +141,8 @@ development experience:
 ### 🚀 Publish Workflow (`publish.yml`)
 
 Automatically builds and deploys your website to GitHub Pages when you
-push to the main branch.
+push to the main branch. It also saves the Quarto freezer (`_freeze`)
+cache for reuse by preview builds.
 
 **Triggers:** Push to main branch, manual dispatch
 
@@ -153,6 +154,7 @@ Creates a preview deployment for pull requests with:
 - DOCX files with tracked changes
 - Visual indicators for modified chapters
 - Banner showing what changed in the PR
+- Reuse of the Quarto freezer cache with updates saved per PR commit
 
 **Triggers:** PR opened, reopened, synchronized, closed, labeled, or
 unlabeled
