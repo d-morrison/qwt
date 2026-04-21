@@ -3,6 +3,7 @@
 /_site/
 /_slides/
 /_handouts/
+/_freeze/
 *.pdf
 *.docx
 *.epub

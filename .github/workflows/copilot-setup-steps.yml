@@ -68,6 +68,15 @@ jobs:
         with:
           r-version: 'release'
           use-public-rspm: true
+
+      # Install R packages needed for linting and Quarto rendering
+      - name: Install R packages
+        run: |
+          install.packages(
+            c("lintr", "rmarkdown"),
+            repos = "https://packagemanager.posit.co/cran/__linux__/noble/latest"
+          )
+        shell: Rscript {0}
       
       # Set up Quarto - required for rendering the website
       - name: Set up Quarto

@@ -33,6 +33,12 @@ jobs:
       - name: Render
         uses: quarto-dev/quarto-actions/render@v2
 
+      - name: Save Quarto freezer
+        uses: actions/cache/save@v4
+        with:
+          path: _freeze
+          key: ${{ runner.os }}-quarto-freezer-${{ github.ref_name }}-${{ github.sha }}
+
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:

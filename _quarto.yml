@@ -16,6 +16,9 @@ execute:
   cache: false
   freeze: auto
 
+filters:
+  - revealjs-level1-slide-breaks.lua
+
 knitr:
   opts_chunk:
     collapse: true
