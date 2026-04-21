@@ -97,14 +97,12 @@ The output will be generated in the `_site/` directory.
 
 ### Multiple output formats
 
-This template supports multiple output formats through Quarto profiles:
+This template supports multiple output formats in a single render:
 
-- **Website** (default): `quarto render` or
-  `quarto render --profile website`
-- **RevealJS slides**: `quarto render --profile revealjs` (output in
-  `_slides/`)
-- **PDF handouts**: `quarto render --profile handout` (output in
-  `_handouts/`)
+- **Website pages** (`.html`)
+- **RevealJS slides** (`-slides.html`)
+- **PDF handouts** (`-handout.pdf`)
+- **DOCX documents** (`.docx`)
 
 ## Publishing to GitHub Pages
 
@@ -211,10 +209,8 @@ ensures all citations are properly traceable.
 ## Project Structure
 
     .
-    ├── _quarto.yml              # Main configuration file (profile-based)
+    ├── _quarto.yml              # Main configuration file
     ├── _quarto-website.yml      # Website-specific configuration
-    ├── _quarto-revealjs.yml     # RevealJS slides configuration
-    ├── _quarto-handout.yml      # PDF handout configuration
     ├── index.qmd                # Website homepage
     ├── chapters/                # Chapter files
     │   ├── chapter1.qmd         # Sample chapter 1
