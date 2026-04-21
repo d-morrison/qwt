@@ -17,6 +17,7 @@ execute:
   freeze: auto
 
 filters:
+  - slidebreak
   - revealjs-level1-slide-breaks.lua
 
 knitr:
