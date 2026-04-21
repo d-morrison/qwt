@@ -94,6 +94,8 @@ jobs:
 
       # Configure optional cross-repository auth for the macros submodule
       - name: Configure GitHub auth for macros repository
+        env:
+          MACROS_REPO_PAT: ${{ secrets.MACROS_REPO_PAT }}
         run: |
           if [ -z "${MACROS_REPO_PAT:-}" ]; then
             echo "MACROS_REPO_PAT is not set; skipping macros auth setup."
