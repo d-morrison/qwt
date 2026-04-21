@@ -99,6 +99,6 @@ jobs:
             echo "MACROS_REPO_PAT is not set; skipping macros auth setup."
             exit 0
           fi
-          echo "$MACROS_REPO_PAT" | gh auth login --hostname github.com --with-token
+          gh auth login --hostname github.com --with-token <<< "$MACROS_REPO_PAT"
           gh auth setup-git
           echo "GH_TOKEN=$MACROS_REPO_PAT" >> "$GITHUB_ENV"

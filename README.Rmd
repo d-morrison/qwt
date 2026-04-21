@@ -173,7 +173,10 @@ Configures the GitHub Copilot coding agent's environment for:
 
 - Quarto
 - TinyTeX
-- Optional GitHub CLI authentication for `https://github.com/d-morrison/macros` (via the `MACROS_REPO_PAT` environment secret in the `copilot` environment)
+- Optional GitHub CLI authentication for
+  `https://github.com/d-morrison/macros`
+  (via the `MACROS_REPO_PAT` environment secret in the `copilot`
+  environment)
 
 **Triggers:** Workflow dispatch, changes to the setup file
 
