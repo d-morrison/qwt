@@ -91,3 +91,13 @@ jobs:
           
           echo ""
           echo "Development environment setup complete!"
+
+      # Configure optional cross-repository auth for the macros submodule
+      - name: Configure GitHub auth for macros repository
+        if: ${{ secrets.MACROS_REPO_PAT != '' }}
+        env:
+          MACROS_REPO_PAT: ${{ secrets.MACROS_REPO_PAT }}
+        run: |
+          echo "$MACROS_REPO_PAT" | gh auth login --hostname github.com --with-token
+          gh auth setup-git
+          echo "GH_TOKEN=$MACROS_REPO_PAT" >> "$GITHUB_ENV"

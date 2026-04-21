@@ -180,7 +180,9 @@ Checks R code style and quality using the lintr package.
 ### 🤖 Copilot Setup Steps (`copilot-setup-steps.yml`)
 
 Configures the GitHub Copilot coding agent's environment with Quarto and
-TinyTeX.
+TinyTeX, and optionally configures GitHub CLI authentication for
+`https://github.com/d-morrison/macros` when the `MACROS_REPO_PAT`
+environment secret is set in the `copilot` environment.
 
 **Triggers:** Workflow dispatch, changes to the setup file
 
@@ -224,6 +226,7 @@ ensures all citations are properly traceable.
     ├── .gitignore              # Git ignore file
     ├── LICENSE                  # CC0 1.0 Universal License
     ├── README.md               # This file
+    ├── macros/                 # Git submodule: d-morrison/macros
     └── .github/
         ├── scripts/             # Scripts for workflows
         │   ├── add-home-banner.py
