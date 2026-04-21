@@ -114,7 +114,7 @@ jobs:
             exit 0
           fi
           if [ "$(gh api repos/d-morrison/macros --jq '.permissions.push')" != "true" ]; then
-            echo "MACROS_REPO_PAT does not have push permission on d-morrison/macros."
+            echo "MACROS_REPO_PAT does not have write permission on d-morrison/macros."
             exit 1
           fi
-          echo "Verified: PAT has push permission on d-morrison/macros."
+          echo "Verified: PAT has write permission on d-morrison/macros."
