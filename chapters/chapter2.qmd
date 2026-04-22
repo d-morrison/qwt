@@ -22,7 +22,11 @@ Display equation:
 
 $$
 \int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+\label{eq-gaussian-integral}
 $$
+
+Direct link to the equation anchor:
+[Equation](#eq-gaussian-integral).
 
 # Tables
 

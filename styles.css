@@ -207,3 +207,13 @@ body.quarto-dark code:not(pre > code) {
   background-color: #404040;
   color: #e6e6e6;
 }
+
+.equation-with-anchor .equation-anchor {
+  margin-left: 0.5rem;
+  text-decoration: none;
+  opacity: 0.7;
+}
+
+.equation-with-anchor .equation-anchor:hover {
+  opacity: 1;
+}
