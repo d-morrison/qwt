@@ -64,6 +64,16 @@ This is a warning callout. Alert readers to potential issues.
 This is an important callout. Emphasize critical information.
 :::
 
+# Theorem-like Divs
+
+::: {#lem-sample .lem}
+This is a sample lemma-style div using the standard class name `lem`.
+:::
+
+::: {#exm-sample .exm}
+This is a sample example-style div using the standard class name `exm`.
+:::
+
 # References {.unnumbered}
 
 ::: {#refs}

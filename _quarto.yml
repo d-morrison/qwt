@@ -17,6 +17,7 @@ execute:
   freeze: auto
 
 filters:
+  - div-anchors
   - slidebreak
   - equation-anchors
   - revealjs-level1-slide-breaks.lua
