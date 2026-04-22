@@ -36,7 +36,6 @@ website:
 
 format:
   html:
-    anchor-sections: true
     theme:
       light: cosmo
       dark: darkly
