@@ -36,6 +36,8 @@ website:
 
 format:
   html:
+    include-after-body:
+      - _extensions/div-anchors/div-anchors.js
     theme:
       light: cosmo
       dark: darkly
