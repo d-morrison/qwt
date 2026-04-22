@@ -67,7 +67,7 @@ function Div(div)
     div.classes:insert("anchored")
   end
 
-  if div.attributes["data-anchor-id"] == nil then
+  if not div.attributes["data-anchor-id"] then
     div.attributes["data-anchor-id"] = div.identifier
   end
 
