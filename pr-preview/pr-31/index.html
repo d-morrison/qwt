@@ -404,7 +404,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">Last modified: 2026-04-22 18:24:47 (UTC)</p>
+      <p class="date">Last modified: 2026-04-22 18:22:56 (UTC)</p>
     </div>
   </div>
   
@@ -476,13 +476,9 @@ div.csl-indent {
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-  const equations = document.querySelectorAll("span[id^='eq-']");
+  const equations = document.querySelectorAll("p > span[id^='eq-']");
   equations.forEach(function (equation) {
     if (equation.querySelector(".equation-anchor")) {
-      return;
-    }
-
-    if (!equation.querySelector(".math.display")) {
       return;
     }
 
@@ -496,7 +492,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const anchor = document.createElement("a");
     anchor.className = "equation-anchor";
     anchor.href = "#" + id;
-    anchor.setAttribute("aria-label", "Permalink to this equation");
+    anchor.setAttribute("aria-label", "Link to equation " + id);
     anchor.textContent = "#";
     equation.appendChild(anchor);
   });
