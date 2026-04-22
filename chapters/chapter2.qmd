@@ -61,6 +61,16 @@ This is a warning callout. Alert readers to potential issues.
 This is an important callout. Emphasize critical information.
 :::
 
+# Theorem-style Divs
+
+::: {#lem-sample .lemma-proof}
+This is a sample lemma-style div using a variant class name.
+:::
+
+::: {#cor-sample .corollary}
+This is a sample corollary-style div.
+:::
+
 # References {.unnumbered}
 
 ::: {#refs}
