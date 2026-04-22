@@ -1,6 +1,43 @@
 <script>
-const addTheoremAnchors = () => {
-  for (const theoremDiv of window.document.querySelectorAll("div.theorem[id]")) {
+// Include both short and full names because source classes and rendered classes can differ.
+const theoremLikeClasses = [
+  "thm",
+  "theorem",
+  "lem",
+  "lemma",
+  "cor",
+  "corollary",
+  "prp",
+  "proposition",
+  "cnj",
+  "conjecture",
+  "def",
+  "definition",
+  "exm",
+  "example",
+  "exr",
+  "exercise",
+  "proof",
+  "remark",
+  "solution"
+];
+
+const isTheoremLikeClass = (className) =>
+  theoremLikeClasses.some(
+    (theoremLikeClass) =>
+      className === theoremLikeClass ||
+      className.startsWith(`${theoremLikeClass}-`)
+  );
+
+const isTheoremLikeDiv = (div) =>
+  Array.from(div.classList).some(isTheoremLikeClass);
+
+const addTheoremLikeDivAnchors = () => {
+  for (const theoremDiv of window.document.querySelectorAll("div[id]")) {
+    if (!isTheoremLikeDiv(theoremDiv)) {
+      continue;
+    }
+
     if (!theoremDiv.classList.contains("anchored")) {
       theoremDiv.classList.add("anchored");
     }
@@ -10,7 +47,8 @@ const addTheoremAnchors = () => {
     }
 
     const anchorTarget =
-      theoremDiv.querySelector(".theorem-title") || theoremDiv.querySelector("p");
+      theoremDiv.querySelector(".theorem-title") ||
+      theoremDiv.querySelector("p:first-of-type");
 
     if (!anchorTarget || anchorTarget.querySelector("a.anchorjs-link")) {
       continue;
@@ -26,8 +64,8 @@ const addTheoremAnchors = () => {
 };
 
 if (window.document.readyState === "loading") {
-  window.document.addEventListener("DOMContentLoaded", addTheoremAnchors);
+  window.document.addEventListener("DOMContentLoaded", addTheoremLikeDivAnchors);
 } else {
-  addTheoremAnchors();
+  addTheoremLikeDivAnchors();
 }
 </script>
