@@ -43,6 +43,20 @@ const addTheoremLikeDivAnchors = () => {
   }
 };
 
+const addSectionHeadingAnchors = () => {
+  for (const sectionHeading of window.document.querySelectorAll(
+    "section[id] > h1, section[id] > h2, section[id] > h3, section[id] > h4, section[id] > h5, section[id] > h6"
+  )) {
+    if (!sectionHeading.classList.contains("anchored")) {
+      sectionHeading.classList.add("anchored");
+    }
+
+    if (!sectionHeading.dataset.anchorId) {
+      sectionHeading.dataset.anchorId = sectionHeading.parentElement.id;
+    }
+  }
+};
+
 const moveTheoremDivAnchorsInline = () => {
   let hasPendingAnchors = false;
 
@@ -72,6 +86,7 @@ const moveTheoremDivAnchorsInline = () => {
       continue;
     }
 
+    anchorLink.classList.remove("external");
     theoremTitle.append(inlineAnchorSeparator);
     theoremTitle.append(anchorLink);
   }
@@ -93,10 +108,12 @@ const moveTheoremDivAnchorsInlineWithRetry = (
 if (window.document.readyState === "loading") {
   window.document.addEventListener("DOMContentLoaded", () => {
     addTheoremLikeDivAnchors();
+    addSectionHeadingAnchors();
     moveTheoremDivAnchorsInlineWithRetry();
   });
 } else {
   addTheoremLikeDivAnchors();
+  addSectionHeadingAnchors();
   moveTheoremDivAnchorsInlineWithRetry();
 }
 

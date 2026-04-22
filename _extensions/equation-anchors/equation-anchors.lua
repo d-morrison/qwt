@@ -9,6 +9,48 @@ end
 local function anchor_script()
   return [[
 <script>
+const defaultAnchorIconFallback = "#";
+
+function getDefaultAnchorTemplate() {
+  const defaultAnchor = document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
+  if (!defaultAnchor) {
+    return null;
+  }
+
+  return {
+    icon: defaultAnchor.getAttribute("data-anchorjs-icon"),
+    style: defaultAnchor.getAttribute("style")
+  };
+}
+
+function alignEquationAnchorWithDefault(anchor, template) {
+  if (!anchor) {
+    return;
+  }
+
+  anchor.classList.remove("external");
+
+  if (template && template.icon) {
+    anchor.setAttribute("data-anchorjs-icon", template.icon);
+    anchor.textContent = "";
+  } else if (!anchor.textContent) {
+    anchor.textContent = defaultAnchorIconFallback;
+  }
+
+  if (template && template.style) {
+    anchor.setAttribute("style", template.style);
+  } else {
+    anchor.removeAttribute("style");
+  }
+}
+
+function updateEquationAnchorsToDefaultGlyph() {
+  const template = getDefaultAnchorTemplate();
+  document.querySelectorAll("a.equation-anchor").forEach(function (anchor) {
+    alignEquationAnchorWithDefault(anchor, template);
+  });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const equations = document.querySelectorAll("span[id^='eq-']");
   equations.forEach(function (equation) {
@@ -31,10 +73,13 @@ document.addEventListener("DOMContentLoaded", function () {
     anchor.className = "equation-anchor anchorjs-link";
     anchor.href = "#" + id;
     anchor.setAttribute("aria-label", "Permalink to this equation");
-    anchor.textContent = "";
     equation.appendChild(anchor);
   });
+
+  updateEquationAnchorsToDefaultGlyph();
 });
+
+window.addEventListener("load", updateEquationAnchorsToDefaultGlyph);
 </script>
 ]]
 end
