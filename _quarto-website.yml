@@ -36,6 +36,7 @@ website:
 
 format:
   html:
+    anchor-sections: true
     include-after-body:
       - _extensions/div-anchors/div-anchors.js
     theme:
