@@ -26,7 +26,7 @@ local function class_is_theorem_like(class)
       return true
     end
 
-    if class:match("^" .. theorem_class .. "%-") then
+    if class:sub(1, #theorem_class + 1) == theorem_class .. "-" then
       return true
     end
   end
