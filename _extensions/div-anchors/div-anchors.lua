@@ -50,6 +50,20 @@ local function has_class(div, class_name)
   return false
 end
 
+local function read_anchor_script()
+  local filter_dir = pandoc.path.directory(PANDOC_SCRIPT_FILE)
+  local script_path = pandoc.path.join({ filter_dir, "div-anchors.js" })
+  local script_file = io.open(script_path, "r")
+
+  if not script_file then
+    return nil
+  end
+
+  local script = script_file:read("*a")
+  script_file:close()
+  return script
+end
+
 function Div(div)
   if not quarto.doc.is_format("html") or quarto.doc.is_format("revealjs") then
     return nil
@@ -68,4 +82,18 @@ function Div(div)
   end
 
   return div
+end
+
+function Pandoc(doc)
+  if not quarto.doc.is_format("html") or quarto.doc.is_format("revealjs") then
+    return doc
+  end
+
+  local anchor_script = read_anchor_script()
+  if not anchor_script or anchor_script == "" then
+    return doc
+  end
+
+  doc.blocks:insert(pandoc.RawBlock("html", anchor_script))
+  return doc
 end
