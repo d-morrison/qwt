@@ -57,6 +57,26 @@ const ensureSectionHeadingAnchorAttributes = () => {
   }
 };
 
+const normalizeInternalAnchorLinkIcons = () => {
+  for (const link of window.document.querySelectorAll(
+    "a.anchorjs-link, a.quarto-xref"
+  )) {
+    if (link.classList.contains("quarto-xref")) {
+      link.classList.add("no-external");
+      link.classList.remove("external");
+      continue;
+    }
+
+    const href = link.getAttribute("href") || "";
+    if (!href.startsWith("#")) {
+      continue;
+    }
+
+    link.classList.add("no-external");
+    link.classList.remove("external");
+  }
+};
+
 const moveTheoremDivAnchorsInline = () => {
   let hasPendingAnchors = false;
 
@@ -109,15 +129,18 @@ if (window.document.readyState === "loading") {
   window.document.addEventListener("DOMContentLoaded", () => {
     addTheoremLikeDivAnchors();
     ensureSectionHeadingAnchorAttributes();
+    normalizeInternalAnchorLinkIcons();
     moveTheoremDivAnchorsInlineWithRetry();
   });
 } else {
   addTheoremLikeDivAnchors();
   ensureSectionHeadingAnchorAttributes();
+  normalizeInternalAnchorLinkIcons();
   moveTheoremDivAnchorsInlineWithRetry();
 }
 
 window.addEventListener("load", () => {
+  normalizeInternalAnchorLinkIcons();
   moveTheoremDivAnchorsInlineWithRetry();
 });
 </script>
