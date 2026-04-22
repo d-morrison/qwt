@@ -43,6 +43,40 @@ const addTheoremLikeDivAnchors = () => {
   }
 };
 
+const ensureSectionHeadingAnchorAttributes = () => {
+  for (const sectionHeading of window.document.querySelectorAll(
+    "section[id] > h1, section[id] > h2, section[id] > h3, section[id] > h4, section[id] > h5, section[id] > h6"
+  )) {
+    if (!sectionHeading.classList.contains("anchored")) {
+      sectionHeading.classList.add("anchored");
+    }
+
+    if (!sectionHeading.dataset.anchorId) {
+      sectionHeading.dataset.anchorId = sectionHeading.parentElement.id;
+    }
+  }
+};
+
+const normalizeInternalAnchorLinkIcons = () => {
+  for (const link of window.document.querySelectorAll(
+    "a.anchorjs-link, a.quarto-xref"
+  )) {
+    if (link.classList.contains("quarto-xref")) {
+      link.classList.add("no-external");
+      link.classList.remove("external");
+      continue;
+    }
+
+    const href = link.getAttribute("href") || "";
+    if (!href.startsWith("#")) {
+      continue;
+    }
+
+    link.classList.add("no-external");
+    link.classList.remove("external");
+  }
+};
+
 const moveTheoremDivAnchorsInline = () => {
   let hasPendingAnchors = false;
 
@@ -72,6 +106,7 @@ const moveTheoremDivAnchorsInline = () => {
       continue;
     }
 
+    anchorLink.classList.remove("external");
     theoremTitle.append(inlineAnchorSeparator);
     theoremTitle.append(anchorLink);
   }
@@ -93,14 +128,19 @@ const moveTheoremDivAnchorsInlineWithRetry = (
 if (window.document.readyState === "loading") {
   window.document.addEventListener("DOMContentLoaded", () => {
     addTheoremLikeDivAnchors();
+    ensureSectionHeadingAnchorAttributes();
+    normalizeInternalAnchorLinkIcons();
     moveTheoremDivAnchorsInlineWithRetry();
   });
 } else {
   addTheoremLikeDivAnchors();
+  ensureSectionHeadingAnchorAttributes();
+  normalizeInternalAnchorLinkIcons();
   moveTheoremDivAnchorsInlineWithRetry();
 }
 
 window.addEventListener("load", () => {
+  normalizeInternalAnchorLinkIcons();
   moveTheoremDivAnchorsInlineWithRetry();
 });
 </script>
