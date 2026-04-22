@@ -25,7 +25,7 @@ $$
 $$ {#eq-gaussian-integral}
 
 Direct link to the equation anchor:
-[Equation](#eq-gaussian-integral).
+See @eq-gaussian-integral.
 
 # Tables
 
