@@ -77,8 +77,8 @@ jobs:
         with:
           to: html
 
-      - name: Render Reveal.js slides
-        if: contains(github.event.pull_request.labels.*.name, 'revealjs')
+      - name: Collect QMD files for optional renders
+        id: optional-render-files
         run: |
           files=()
           if [ -f index.qmd ]; then
@@ -90,55 +90,42 @@ jobs:
             done < <(find chapters -maxdepth 1 -type f -name '*.qmd' | sort)
           fi
           if [ ${#files[@]} -eq 0 ]; then
-            echo "No qmd files found for revealjs render; skipping."
+            echo "has_files=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          for file in "${files[@]}"; do
+          {
+            echo "files<<EOF"
+            printf '%s\n' "${files[@]}"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          echo "has_files=true" >> "$GITHUB_OUTPUT"
+
+      - name: Render Reveal.js slides
+        if: contains(github.event.pull_request.labels.*.name, 'revealjs') && steps.optional-render-files.outputs.has_files == 'true'
+        run: |
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
             echo "Rendering Reveal.js for $file"
             quarto render "$file" --to revealjs
-          done
+          done <<< "${{ steps.optional-render-files.outputs.files }}"
 
       - name: Render PDF
-        if: contains(github.event.pull_request.labels.*.name, 'pdf')
+        if: contains(github.event.pull_request.labels.*.name, 'pdf') && steps.optional-render-files.outputs.has_files == 'true'
         run: |
-          files=()
-          if [ -f index.qmd ]; then
-            files+=(index.qmd)
-          fi
-          if [ -d chapters ]; then
-            while IFS= read -r chapter_file; do
-              files+=("$chapter_file")
-            done < <(find chapters -maxdepth 1 -type f -name '*.qmd' | sort)
-          fi
-          if [ ${#files[@]} -eq 0 ]; then
-            echo "No qmd files found for pdf render; skipping."
-            exit 0
-          fi
-          for file in "${files[@]}"; do
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
             echo "Rendering PDF for $file"
             quarto render "$file" --to pdf
-          done
+          done <<< "${{ steps.optional-render-files.outputs.files }}"
 
       - name: Render DOCX
-        if: contains(github.event.pull_request.labels.*.name, 'docx')
+        if: contains(github.event.pull_request.labels.*.name, 'docx') && steps.optional-render-files.outputs.has_files == 'true'
         run: |
-          files=()
-          if [ -f index.qmd ]; then
-            files+=(index.qmd)
-          fi
-          if [ -d chapters ]; then
-            while IFS= read -r chapter_file; do
-              files+=("$chapter_file")
-            done < <(find chapters -maxdepth 1 -type f -name '*.qmd' | sort)
-          fi
-          if [ ${#files[@]} -eq 0 ]; then
-            echo "No qmd files found for docx render; skipping."
-            exit 0
-          fi
-          for file in "${files[@]}"; do
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
             echo "Rendering DOCX for $file"
             quarto render "$file" --to docx
-          done
+          done <<< "${{ steps.optional-render-files.outputs.files }}"
 
       - name: Install python-docx for DOCX comparison
         if: contains(github.event.pull_request.labels.*.name, 'docx')
