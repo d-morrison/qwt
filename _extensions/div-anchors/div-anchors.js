@@ -60,9 +60,7 @@ const addLevel1SectionAnchors = () => {
 
 const updateAnchorIcons = () => {
   for (const anchorLink of window.document.querySelectorAll("a.anchorjs-link")) {
-    if (anchorLink.textContent !== anchorIcon) {
-      anchorLink.textContent = anchorIcon;
-    }
+    anchorLink.textContent = anchorIcon;
   }
 };
 
@@ -118,13 +116,11 @@ if (window.document.readyState === "loading") {
     addTheoremLikeDivAnchors();
     addLevel1SectionAnchors();
     moveTheoremDivAnchorsInlineWithRetry();
-    updateAnchorIcons();
   });
 } else {
   addTheoremLikeDivAnchors();
   addLevel1SectionAnchors();
   moveTheoremDivAnchorsInlineWithRetry();
-  updateAnchorIcons();
 }
 
 window.addEventListener("load", () => {
