@@ -98,9 +98,9 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-f81f3c79f694eaf6f88ebcce70241f9e.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-873e6e24889f5b84a2497d6c262ef635.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-51f9ee0298c270ca7725fa318eed1645.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-873e6e24889f5b84a2497d6c262ef635.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-c4af9d5cc9560aba4b75f44438dc8e4e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-e0bf5562c0727902ff29b4740d84afe5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-c4af9d5cc9560aba4b75f44438dc8e4e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -542,11 +542,11 @@ Important
 </section>
 <section id="theorem-like-divs" class="level1" data-number="5">
 <h1 data-number="5"><span class="header-section-number">5</span> Theorem-like Divs</h1>
-<div id="lem-sample" class="lemma-proof theorem lemma">
-<p><span class="theorem-title"><strong>Lemma 1</strong></span> This is a sample lemma-style div using the variant class name <code>lemma-proof</code>.</p>
+<div id="lem-sample" class="lem theorem lemma">
+<p><span class="theorem-title"><strong>Lemma 1</strong></span> This is a sample lemma-style div using the standard class name <code>lem</code>.</p>
 </div>
-<div id="cor-sample" class="corollary theorem">
-<p><span class="theorem-title"><strong>Corollary 1</strong></span> This is a sample corollary-style div using the standard class name <code>corollary</code>.</p>
+<div id="exm-sample" class="exm theorem example">
+<p><span class="theorem-title"><strong>Example 1</strong></span> This is a sample example-style div using the standard class name <code>exm</code>.</p>
 </div>
 </section>
 <section id="references" class="level1 unnumbered">
@@ -562,31 +562,30 @@ Important
 
 <a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
 <script>
-const theoremLikeClassPairs = [
-  ["thm", "theorem"],
-  ["lem", "lemma"],
-  ["cor", "corollary"],
-  ["prp", "proposition"],
-  ["cnj", "conjecture"],
-  ["def", "definition"],
-  ["exm", "example"],
-  ["exr", "exercise"],
-  ["proof", "proof"],
-  ["remark", "remark"],
-  ["solution", "solution"]
-];
-
-const theoremLikeClasses = theoremLikeClassPairs.flat();
-
-const isTheoremLikeClass = (className) =>
-  theoremLikeClasses.some(
-    (theoremLikeClass) =>
-      className === theoremLikeClass ||
-      className.startsWith(`${theoremLikeClass}-`)
-  );
+const theoremLikeClasses = new Set([
+  "thm",
+  "theorem",
+  "lem",
+  "lemma",
+  "cor",
+  "corollary",
+  "prp",
+  "proposition",
+  "cnj",
+  "conjecture",
+  "def",
+  "definition",
+  "exm",
+  "example",
+  "exr",
+  "exercise",
+  "proof",
+  "remark",
+  "solution"
+]);
 
 const isTheoremLikeDiv = (div) =>
-  Array.from(div.classList).some(isTheoremLikeClass);
+  Array.from(div.classList).some((className) => theoremLikeClasses.has(className));
 
 const addTheoremLikeDivAnchors = () => {
   for (const theoremDiv of window.document.querySelectorAll("div[id]")) {
@@ -602,20 +601,6 @@ const addTheoremLikeDivAnchors = () => {
       theoremDiv.dataset.anchorId = theoremDiv.id;
     }
 
-    const anchorTarget =
-      theoremDiv.querySelector(".theorem-title") ||
-      theoremDiv.querySelector("p:first-of-type");
-
-    if (!anchorTarget || anchorTarget.querySelector("a.anchorjs-link")) {
-      continue;
-    }
-
-    const anchorLink = window.document.createElement("a");
-    anchorLink.className = "anchorjs-link";
-    anchorLink.setAttribute("aria-label", "Anchor");
-    anchorLink.setAttribute("href", `#${theoremDiv.id}`);
-    anchorLink.textContent = "";
-    anchorTarget.appendChild(anchorLink);
   }
 };
 
@@ -1156,12 +1141,12 @@ if (window.document.readyState === "loading") {
 <span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a><span class="fu"># Theorem-like Divs</span></span>
 <span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>::: {#lem-sample .lemma-proof}</span>
-<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>This is a sample lemma-style div using the variant class name <span class="in">`lemma-proof`</span>.</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>::: {#lem-sample .lem}</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>This is a sample lemma-style div using the standard class name <span class="in">`lem`</span>.</span>
 <span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>::: {#cor-sample .corollary}</span>
-<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>This is a sample corollary-style div using the standard class name <span class="in">`corollary`</span>.</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>::: {#exm-sample .exm}</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>This is a sample example-style div using the standard class name <span class="in">`exm`</span>.</span>
 <span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>:::</span>
 <span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a><span class="fu"># References {.unnumbered}</span></span>

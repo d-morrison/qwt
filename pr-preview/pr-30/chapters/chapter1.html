@@ -94,9 +94,9 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-f81f3c79f694eaf6f88ebcce70241f9e.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-873e6e24889f5b84a2497d6c262ef635.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-51f9ee0298c270ca7725fa318eed1645.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-873e6e24889f5b84a2497d6c262ef635.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="../site_libs/bootstrap/bootstrap-c4af9d5cc9560aba4b75f44438dc8e4e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-e0bf5562c0727902ff29b4740d84afe5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-c4af9d5cc9560aba4b75f44438dc8e4e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
   "collapse-after": 3,
@@ -439,31 +439,30 @@ div.csl-indent {
 <!-- -->
 
 </section><a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main><!-- /main --><script>
-const theoremLikeClassPairs = [
-  ["thm", "theorem"],
-  ["lem", "lemma"],
-  ["cor", "corollary"],
-  ["prp", "proposition"],
-  ["cnj", "conjecture"],
-  ["def", "definition"],
-  ["exm", "example"],
-  ["exr", "exercise"],
-  ["proof", "proof"],
-  ["remark", "remark"],
-  ["solution", "solution"]
-];
-
-const theoremLikeClasses = theoremLikeClassPairs.flat();
-
-const isTheoremLikeClass = (className) =>
-  theoremLikeClasses.some(
-    (theoremLikeClass) =>
-      className === theoremLikeClass ||
-      className.startsWith(`${theoremLikeClass}-`)
-  );
+const theoremLikeClasses = new Set([
+  "thm",
+  "theorem",
+  "lem",
+  "lemma",
+  "cor",
+  "corollary",
+  "prp",
+  "proposition",
+  "cnj",
+  "conjecture",
+  "def",
+  "definition",
+  "exm",
+  "example",
+  "exr",
+  "exercise",
+  "proof",
+  "remark",
+  "solution"
+]);
 
 const isTheoremLikeDiv = (div) =>
-  Array.from(div.classList).some(isTheoremLikeClass);
+  Array.from(div.classList).some((className) => theoremLikeClasses.has(className));
 
 const addTheoremLikeDivAnchors = () => {
   for (const theoremDiv of window.document.querySelectorAll("div[id]")) {
@@ -479,20 +478,6 @@ const addTheoremLikeDivAnchors = () => {
       theoremDiv.dataset.anchorId = theoremDiv.id;
     }
 
-    const anchorTarget =
-      theoremDiv.querySelector(".theorem-title") ||
-      theoremDiv.querySelector("p:first-of-type");
-
-    if (!anchorTarget || anchorTarget.querySelector("a.anchorjs-link")) {
-      continue;
-    }
-
-    const anchorLink = window.document.createElement("a");
-    anchorLink.className = "anchorjs-link";
-    anchorLink.setAttribute("aria-label", "Anchor");
-    anchorLink.setAttribute("href", `#${theoremDiv.id}`);
-    anchorLink.textContent = "";
-    anchorTarget.appendChild(anchorLink);
   }
 };
 
