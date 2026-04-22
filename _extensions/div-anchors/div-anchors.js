@@ -1,26 +1,19 @@
 <script>
-// Include both short and full names because source classes and rendered classes can differ.
-const theoremLikeClasses = [
-  "thm",
-  "theorem",
-  "lem",
-  "lemma",
-  "cor",
-  "corollary",
-  "prp",
-  "proposition",
-  "cnj",
-  "conjecture",
-  "def",
-  "definition",
-  "exm",
-  "example",
-  "exr",
-  "exercise",
-  "proof",
-  "remark",
-  "solution"
+const theoremLikeClassPairs = [
+  ["thm", "theorem"],
+  ["lem", "lemma"],
+  ["cor", "corollary"],
+  ["prp", "proposition"],
+  ["cnj", "conjecture"],
+  ["def", "definition"],
+  ["exm", "example"],
+  ["exr", "exercise"],
+  ["proof"],
+  ["remark"],
+  ["solution"]
 ];
+
+const theoremLikeClasses = theoremLikeClassPairs.flat();
 
 const isTheoremLikeClass = (className) =>
   theoremLikeClasses.some(
