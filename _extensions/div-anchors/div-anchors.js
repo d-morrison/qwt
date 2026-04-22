@@ -20,6 +20,7 @@ const theoremLikeClasses = new Set([
   "remark",
   "solution"
 ]);
+const inlineAnchorSeparator = "\u00A0";
 
 const isTheoremLikeDiv = (div) =>
   Array.from(div.classList).some((className) => theoremLikeClasses.has(className));
@@ -62,16 +63,13 @@ const moveTheoremDivAnchorsInline = () => {
       continue;
     }
 
-    theoremTitle.append(" ");
+    theoremTitle.append(inlineAnchorSeparator);
     theoremTitle.append(anchorLink);
   }
 };
 
 const initializeTheoremDivAnchors = () => {
   addTheoremLikeDivAnchors();
-  window.requestAnimationFrame(() => {
-    moveTheoremDivAnchorsInline();
-  });
 };
 
 if (window.document.readyState === "loading") {
