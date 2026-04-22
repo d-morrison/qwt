@@ -159,6 +159,10 @@ unlabeled
 
 **Labels:**
 
+- Default preview render is `html` only
+- Add `revealjs` to render slides
+- Add `pdf` to render handouts
+- Add `docx` to render Word output and tracked changes
 - Add `no-preview-highlights` label to disable change highlighting if
   it's glitchy
 

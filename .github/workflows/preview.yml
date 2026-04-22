@@ -12,6 +12,9 @@ on:
 
 jobs:
   build-deploy:
+    if: |
+      (github.event.action != 'labeled' && github.event.action != 'unlabeled') ||
+      contains(fromJson('["revealjs","pdf","docx","no-preview-highlights"]'), github.event.label.name)
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -49,8 +52,10 @@ jobs:
             ${{ runner.os }}-quarto-freezer-main-
             ${{ runner.os }}-quarto-freezer-
 
-      - name: Render
+      - name: Render HTML
         uses: quarto-dev/quarto-actions/render@v2
+        with:
+          to: html
 
       # Detect which chapters have changed and optionally disable highlighting
       # based on the 'no-preview-highlights' PR label
@@ -68,9 +73,74 @@ jobs:
       - name: Re-render with metadata
         if: env.PREVIEW_SHOW_HIGHLIGHTS == 'true'
         uses: quarto-dev/quarto-actions/render@v2
+        with:
+          to: html
+
+      - name: Render Reveal.js slides
+        if: contains(github.event.pull_request.labels.*.name, 'revealjs')
+        run: |
+          files=()
+          if [ -f index.qmd ]; then
+            files+=(index.qmd)
+          fi
+          if [ -d chapters ]; then
+            while IFS= read -r chapter_file; do
+              files+=("$chapter_file")
+            done < <(find chapters -maxdepth 1 -type f -name '*.qmd' | sort)
+          fi
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No qmd files found for revealjs render; skipping."
+            exit 0
+          fi
+          for file in "${files[@]}"; do
+            echo "Rendering Reveal.js for $file"
+            quarto render "$file" --to revealjs
+          done
+
+      - name: Render PDF
+        if: contains(github.event.pull_request.labels.*.name, 'pdf')
+        run: |
+          files=()
+          if [ -f index.qmd ]; then
+            files+=(index.qmd)
+          fi
+          if [ -d chapters ]; then
+            while IFS= read -r chapter_file; do
+              files+=("$chapter_file")
+            done < <(find chapters -maxdepth 1 -type f -name '*.qmd' | sort)
+          fi
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No qmd files found for pdf render; skipping."
+            exit 0
+          fi
+          for file in "${files[@]}"; do
+            echo "Rendering PDF for $file"
+            quarto render "$file" --to pdf
+          done
+
+      - name: Render DOCX
+        if: contains(github.event.pull_request.labels.*.name, 'docx')
+        run: |
+          files=()
+          if [ -f index.qmd ]; then
+            files+=(index.qmd)
+          fi
+          if [ -d chapters ]; then
+            while IFS= read -r chapter_file; do
+              files+=("$chapter_file")
+            done < <(find chapters -maxdepth 1 -type f -name '*.qmd' | sort)
+          fi
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No qmd files found for docx render; skipping."
+            exit 0
+          fi
+          for file in "${files[@]}"; do
+            echo "Rendering DOCX for $file"
+            quarto render "$file" --to docx
+          done
 
       - name: Install python-docx for DOCX comparison
-        if: env.PREVIEW_SHOW_HIGHLIGHTS == 'true'
+        if: contains(github.event.pull_request.labels.*.name, 'docx')
         run: pip install python-docx
 
       - name: Highlight HTML content changes
@@ -84,6 +154,7 @@ jobs:
           PREVIEW_CHANGED_CHAPTERS: ${{ env.PREVIEW_CHANGED_CHAPTERS }}
 
       - name: Create DOCX with tracked changes
+        if: contains(github.event.pull_request.labels.*.name, 'docx')
         run: python3 .github/scripts/create-docx-tracked-changes.py
         env:
           DOCX_DIR: ./_site
