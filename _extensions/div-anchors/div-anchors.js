@@ -21,6 +21,7 @@ const theoremLikeClasses = new Set([
   "solution"
 ]);
 const inlineAnchorSeparator = "\u00A0";
+const anchorIcon = "🔗";
 const maxAnchorRetryAttempts = 5;
 const anchorRetryDelayMs = 50;
 
@@ -39,6 +40,28 @@ const addTheoremLikeDivAnchors = () => {
 
     if (!theoremDiv.dataset.anchorId) {
       theoremDiv.dataset.anchorId = theoremDiv.id;
+    }
+  }
+};
+
+const addLevel1SectionAnchors = () => {
+  for (const sectionHeading of window.document.querySelectorAll(
+    "section.level1[id] > h1"
+  )) {
+    if (!sectionHeading.classList.contains("anchored")) {
+      sectionHeading.classList.add("anchored");
+    }
+
+    if (!sectionHeading.dataset.anchorId) {
+      sectionHeading.dataset.anchorId = sectionHeading.parentElement.id;
+    }
+  }
+};
+
+const updateAnchorIcons = () => {
+  for (const anchorLink of window.document.querySelectorAll("a.anchorjs-link")) {
+    if (anchorLink.textContent !== anchorIcon) {
+      anchorLink.textContent = anchorIcon;
     }
   }
 };
@@ -93,14 +116,19 @@ const moveTheoremDivAnchorsInlineWithRetry = (
 if (window.document.readyState === "loading") {
   window.document.addEventListener("DOMContentLoaded", () => {
     addTheoremLikeDivAnchors();
+    addLevel1SectionAnchors();
     moveTheoremDivAnchorsInlineWithRetry();
+    updateAnchorIcons();
   });
 } else {
   addTheoremLikeDivAnchors();
+  addLevel1SectionAnchors();
   moveTheoremDivAnchorsInlineWithRetry();
+  updateAnchorIcons();
 }
 
 window.addEventListener("load", () => {
   moveTheoremDivAnchorsInlineWithRetry();
+  updateAnchorIcons();
 });
 </script>

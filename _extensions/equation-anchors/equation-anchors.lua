@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
     anchor.className = "equation-anchor";
     anchor.href = "#" + id;
     anchor.setAttribute("aria-label", "Permalink to this equation");
-    anchor.textContent = "#";
+    anchor.textContent = "🔗";
     equation.appendChild(anchor);
   });
 });
