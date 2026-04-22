@@ -80,15 +80,45 @@ jobs:
 
       - name: Render PDF
         if: contains(github.event.pull_request.labels.*.name, 'pdf')
-        uses: quarto-dev/quarto-actions/render@v2
-        with:
-          to: pdf
+        run: |
+          files=()
+          if [ -f index.qmd ]; then
+            files+=(index.qmd)
+          fi
+          if [ -d chapters ]; then
+            while IFS= read -r chapter_file; do
+              files+=("$chapter_file")
+            done < <(find chapters -maxdepth 1 -type f -name '*.qmd' | sort)
+          fi
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No qmd files found for pdf render; skipping."
+            exit 0
+          fi
+          for file in "${files[@]}"; do
+            echo "Rendering PDF for $file"
+            quarto render "$file" --to pdf
+          done
 
       - name: Render DOCX
         if: contains(github.event.pull_request.labels.*.name, 'docx')
-        uses: quarto-dev/quarto-actions/render@v2
-        with:
-          to: docx
+        run: |
+          files=()
+          if [ -f index.qmd ]; then
+            files+=(index.qmd)
+          fi
+          if [ -d chapters ]; then
+            while IFS= read -r chapter_file; do
+              files+=("$chapter_file")
+            done < <(find chapters -maxdepth 1 -type f -name '*.qmd' | sort)
+          fi
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No qmd files found for docx render; skipping."
+            exit 0
+          fi
+          for file in "${files[@]}"; do
+            echo "Rendering DOCX for $file"
+            quarto render "$file" --to docx
+          done
 
       # Detect which chapters have changed and optionally disable highlighting
       # based on the 'no-preview-highlights' PR label
