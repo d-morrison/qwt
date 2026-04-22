@@ -274,7 +274,12 @@ class HTMLDiffer:
                     # Replace in the HTML - use a unique marker to ensure we replace the right instance
                     # We escape the element for regex safety
                     escaped_elem = re.escape(new_elem)
-                    highlighted_new_html = re.sub(escaped_elem, highlighted_elem, highlighted_new_html, count=1)
+                    highlighted_new_html = re.sub(
+                        escaped_elem,
+                        lambda _: highlighted_elem,
+                        highlighted_new_html,
+                        count=1
+                    )
                     changes_made += 1
             
             elif (best_match_idx is None or best_ratio < SIMILARITY_THRESHOLD_MIN) and new_text:
@@ -288,7 +293,12 @@ class HTMLDiffer:
                     
                     # Replace in the HTML using regex with escaping
                     escaped_elem = re.escape(new_elem)
-                    highlighted_new_html = re.sub(escaped_elem, highlighted_elem, highlighted_new_html, count=1)
+                    highlighted_new_html = re.sub(
+                        escaped_elem,
+                        lambda _: highlighted_elem,
+                        highlighted_new_html,
+                        count=1
+                    )
                     changes_made += 1
         
         return highlighted_new_html, changes_made

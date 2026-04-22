@@ -52,6 +52,12 @@ ggplot(mtcars, aes(x = wt, y = mpg)) +
 
 Include citations using `@citationkey` format, which references entries in your `references.bib` file.
 
+You can also add theorem-style divs:
+
+::: {#thm-sample .thm}
+This is a sample theorem block with an ID.
+:::
+
 I'm adding some new content here:
 
 ```{r}
