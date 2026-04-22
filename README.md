@@ -165,6 +165,7 @@ unlabeled
 - Add `docx` to render Word output and tracked changes
 - Add `no-preview-highlights` label to disable change highlighting if
   it's glitchy
+- Add `clear-freezer` label to render without restoring `_freeze` cache
 
 ### ✅ Spell Check Workflow (`check-spelling.yaml`)
 

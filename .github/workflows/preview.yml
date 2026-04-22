@@ -14,7 +14,7 @@ jobs:
   build-deploy:
     if: |
       (github.event.action != 'labeled' && github.event.action != 'unlabeled') ||
-      contains(fromJson('["revealjs","pdf","docx","no-preview-highlights"]'), github.event.label.name)
+      contains(fromJson('["revealjs","pdf","docx","no-preview-highlights","clear-freezer"]'), github.event.label.name)
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -42,6 +42,7 @@ jobs:
             any::tibble
 
       - name: Restore Quarto freezer
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'clear-freezer') }}
         id: quarto-freezer-cache
         uses: actions/cache/restore@v4
         with:
