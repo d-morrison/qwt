@@ -28,10 +28,10 @@ document.addEventListener("DOMContentLoaded", function () {
     equation.classList.add("equation-anchor-target");
 
     const anchor = document.createElement("a");
-    anchor.className = "equation-anchor";
+    anchor.className = "equation-anchor anchorjs-link";
     anchor.href = "#" + id;
     anchor.setAttribute("aria-label", "Permalink to this equation");
-    anchor.textContent = "🔗";
+    anchor.textContent = "";
     equation.appendChild(anchor);
   });
 });
