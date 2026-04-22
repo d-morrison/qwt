@@ -70,7 +70,7 @@ jobs:
             done < <(find chapters -maxdepth 1 -type f -name '*.qmd' | sort)
           fi
           if [ ${#files[@]} -eq 0 ]; then
-            echo "No QMD files found for revealjs render; skipping."
+            echo "No qmd files found for revealjs render; skipping."
             exit 0
           fi
           for file in "${files[@]}"; do
