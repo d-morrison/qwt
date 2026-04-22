@@ -389,7 +389,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">Last modified: 2026-04-22 23:31:30 (UTC)</p>
+      <p class="date">Last modified: 2026-04-22 23:35:56 (UTC)</p>
     </div>
   </div>
   
@@ -459,84 +459,6 @@ div.csl-indent {
 
 <!-- -->
 
-<script>
-const defaultAnchorIconFallback = "#";
-
-function getDefaultAnchorTemplate() {
-  const defaultAnchor = document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
-  if (!defaultAnchor) {
-    return null;
-  }
-
-  return {
-    icon: defaultAnchor.getAttribute("data-anchorjs-icon"),
-    style: defaultAnchor.getAttribute("style")
-  };
-}
-
-function alignEquationAnchorWithDefault(anchor, template) {
-  if (!anchor) {
-    return;
-  }
-
-  anchor.classList.remove("external");
-
-  if (template && template.icon) {
-    anchor.setAttribute("data-anchorjs-icon", template.icon);
-    anchor.textContent = "";
-  } else if (!anchor.textContent) {
-    anchor.textContent = defaultAnchorIconFallback;
-  }
-
-  if (template && template.style) {
-    anchor.setAttribute("style", template.style);
-  } else {
-    anchor.removeAttribute("style");
-  }
-}
-
-function alignEquationAnchorsWithDefault() {
-  const template = getDefaultAnchorTemplate();
-  document.querySelectorAll("a.equation-anchor").forEach(function (anchor) {
-    alignEquationAnchorWithDefault(anchor, template);
-  });
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  const equations = document.querySelectorAll("span[id^='eq-']");
-  equations.forEach(function (equation) {
-    if (equation.querySelector(".equation-anchor")) {
-      return;
-    }
-
-    if (!equation.querySelector(".math.display")) {
-      return;
-    }
-
-    const id = equation.getAttribute("id");
-    if (!id) {
-      return;
-    }
-
-    equation.classList.add("equation-anchor-target");
-
-    const anchor = document.createElement("a");
-    anchor.className = "equation-anchor anchorjs-link";
-    anchor.href = "#" + id;
-    anchor.setAttribute("aria-label", "Permalink to this equation");
-    equation.appendChild(anchor);
-  });
-
-  alignEquationAnchorsWithDefault();
-});
-
-window.addEventListener("load", alignEquationAnchorsWithDefault);
-</script>
-
-</section>
-</section>
-
-<a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
 <script>
 const theoremLikeClasses = new Set([
   "thm",
@@ -683,6 +605,85 @@ window.addEventListener("load", () => {
   moveTheoremDivAnchorsInlineWithRetry();
 });
 </script>
+
+<script>
+const defaultAnchorIconFallback = "#";
+
+function getDefaultAnchorTemplate() {
+  const defaultAnchor = document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
+  if (!defaultAnchor) {
+    return null;
+  }
+
+  return {
+    icon: defaultAnchor.getAttribute("data-anchorjs-icon"),
+    style: defaultAnchor.getAttribute("style")
+  };
+}
+
+function alignEquationAnchorWithDefault(anchor, template) {
+  if (!anchor) {
+    return;
+  }
+
+  anchor.classList.remove("external");
+
+  if (template && template.icon) {
+    anchor.setAttribute("data-anchorjs-icon", template.icon);
+    anchor.textContent = "";
+  } else if (!anchor.textContent) {
+    anchor.textContent = defaultAnchorIconFallback;
+  }
+
+  if (template && template.style) {
+    anchor.setAttribute("style", template.style);
+  } else {
+    anchor.removeAttribute("style");
+  }
+}
+
+function alignEquationAnchorsWithDefault() {
+  const template = getDefaultAnchorTemplate();
+  document.querySelectorAll("a.equation-anchor").forEach(function (anchor) {
+    alignEquationAnchorWithDefault(anchor, template);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const equations = document.querySelectorAll("span[id^='eq-']");
+  equations.forEach(function (equation) {
+    if (equation.querySelector(".equation-anchor")) {
+      return;
+    }
+
+    if (!equation.querySelector(".math.display")) {
+      return;
+    }
+
+    const id = equation.getAttribute("id");
+    if (!id) {
+      return;
+    }
+
+    equation.classList.add("equation-anchor-target");
+
+    const anchor = document.createElement("a");
+    anchor.className = "equation-anchor anchorjs-link";
+    anchor.href = "#" + id;
+    anchor.setAttribute("aria-label", "Permalink to this equation");
+    equation.appendChild(anchor);
+  });
+
+  alignEquationAnchorsWithDefault();
+});
+
+window.addEventListener("load", alignEquationAnchorsWithDefault);
+</script>
+
+</section>
+</section>
+
+<a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right

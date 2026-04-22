@@ -358,7 +358,18 @@ div.csl-indent {
   </ul><div class="toc-actions"><ul><li><a href="https://github.com/UCD-SERG/qwt/edit/main/chapters/chapter1.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/UCD-SERG/qwt/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li><li><a href="https://github.com/UCD-SERG/qwt/blob/main/chapters/chapter1.qmd" class="toc-action"><i class="bi empty"></i>View source</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="chapter1-slides.html"><i class="bi bi-file-slides"></i>RevealJS</a></li><li><a href="chapter1-handout.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li><li><a href="chapter1.docx"><i class="bi bi-file-word"></i>MS Word</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
+<main class="content" id="quarto-document-content">
+<div class="preview-combined-banner">
+    <p style="margin: 0;">
+        <strong>📝 Preview Changes:</strong> This page has been modified in this pull request (~32% of content changed).
+        <br>
+        <strong>🎨 Highlighting Legend:</strong> 
+        <mark class="preview-text-changed" style="display: inline; padding: 1px 3px;">Modified text (yellow)</mark> shows changed words/phrases with tooltips of original text, 
+        <mark class="preview-text-added" style="display: inline; padding: 1px 3px;">added text (green)</mark> shows new content, and 
+        <mark class="preview-element-added" style="display: inline; padding: 1px 3px;">new sections (blue)</mark> highlight entirely new paragraphs.
+    </p>
+</div>
+<header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
 <div class="quarto-title-block"><div><h1 class="title">Chapter 1: Introduction</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
@@ -424,78 +435,6 @@ div.csl-indent {
 <!-- -->
 
 <script>
-const defaultAnchorIconFallback = "#";
-
-function getDefaultAnchorTemplate() {
-  const defaultAnchor = document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
-  if (!defaultAnchor) {
-    return null;
-  }
-
-  return {
-    icon: defaultAnchor.getAttribute("data-anchorjs-icon"),
-    style: defaultAnchor.getAttribute("style")
-  };
-}
-
-function alignEquationAnchorWithDefault(anchor, template) {
-  if (!anchor) {
-    return;
-  }
-
-  anchor.classList.remove("external");
-
-  if (template && template.icon) {
-    anchor.setAttribute("data-anchorjs-icon", template.icon);
-    anchor.textContent = "";
-  } else if (!anchor.textContent) {
-    anchor.textContent = defaultAnchorIconFallback;
-  }
-
-  if (template && template.style) {
-    anchor.setAttribute("style", template.style);
-  } else {
-    anchor.removeAttribute("style");
-  }
-}
-
-function alignEquationAnchorsWithDefault() {
-  const template = getDefaultAnchorTemplate();
-  document.querySelectorAll("a.equation-anchor").forEach(function (anchor) {
-    alignEquationAnchorWithDefault(anchor, template);
-  });
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  const equations = document.querySelectorAll("span[id^='eq-']");
-  equations.forEach(function (equation) {
-    if (equation.querySelector(".equation-anchor")) {
-      return;
-    }
-
-    if (!equation.querySelector(".math.display")) {
-      return;
-    }
-
-    const id = equation.getAttribute("id");
-    if (!id) {
-      return;
-    }
-
-    equation.classList.add("equation-anchor-target");
-
-    const anchor = document.createElement("a");
-    anchor.className = "equation-anchor anchorjs-link";
-    anchor.href = "#" + id;
-    anchor.setAttribute("aria-label", "Permalink to this equation");
-    equation.appendChild(anchor);
-  });
-
-  alignEquationAnchorsWithDefault();
-});
-
-window.addEventListener("load", alignEquationAnchorsWithDefault);
-</script></section><a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main><!-- /main --><script>
 const theoremLikeClasses = new Set([
   "thm",
   "theorem",
@@ -640,7 +579,79 @@ window.addEventListener("load", () => {
   normalizeInternalAnchorLinkIcons();
   moveTheoremDivAnchorsInlineWithRetry();
 });
-</script><script id="quarto-html-after-body" type="application/javascript">
+</script><script>
+const defaultAnchorIconFallback = "#";
+
+function getDefaultAnchorTemplate() {
+  const defaultAnchor = document.querySelector("a.anchorjs-link[data-anchorjs-icon]");
+  if (!defaultAnchor) {
+    return null;
+  }
+
+  return {
+    icon: defaultAnchor.getAttribute("data-anchorjs-icon"),
+    style: defaultAnchor.getAttribute("style")
+  };
+}
+
+function alignEquationAnchorWithDefault(anchor, template) {
+  if (!anchor) {
+    return;
+  }
+
+  anchor.classList.remove("external");
+
+  if (template && template.icon) {
+    anchor.setAttribute("data-anchorjs-icon", template.icon);
+    anchor.textContent = "";
+  } else if (!anchor.textContent) {
+    anchor.textContent = defaultAnchorIconFallback;
+  }
+
+  if (template && template.style) {
+    anchor.setAttribute("style", template.style);
+  } else {
+    anchor.removeAttribute("style");
+  }
+}
+
+function alignEquationAnchorsWithDefault() {
+  const template = getDefaultAnchorTemplate();
+  document.querySelectorAll("a.equation-anchor").forEach(function (anchor) {
+    alignEquationAnchorWithDefault(anchor, template);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const equations = document.querySelectorAll("span[id^='eq-']");
+  equations.forEach(function (equation) {
+    if (equation.querySelector(".equation-anchor")) {
+      return;
+    }
+
+    if (!equation.querySelector(".math.display")) {
+      return;
+    }
+
+    const id = equation.getAttribute("id");
+    if (!id) {
+      return;
+    }
+
+    equation.classList.add("equation-anchor-target");
+
+    const anchor = document.createElement("a");
+    anchor.className = "equation-anchor anchorjs-link";
+    anchor.href = "#" + id;
+    anchor.setAttribute("aria-label", "Permalink to this equation");
+    equation.appendChild(anchor);
+  });
+
+  alignEquationAnchorsWithDefault();
+});
+
+window.addEventListener("load", alignEquationAnchorsWithDefault);
+</script></section><a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
     if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -1116,8 +1127,8 @@ window.addEventListener("load", () => {
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">    output-file: chapter1-handout.pdf</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">  docx:</span></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">    output-file: chapter1.docx</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="an">preview-changed:</span><span class="co"> true</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>This is the first chapter of your website. Replace this content with your own.</span>
 <span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="fu"># Section 1.1 {#sec-1.1}</span></span>
