@@ -60,17 +60,23 @@ jobs:
       - name: Render Reveal.js slides
         if: contains(github.event.pull_request.labels.*.name, 'revealjs')
         run: |
-          shopt -s nullglob
           files=()
           if [ -f index.qmd ]; then
             files+=(index.qmd)
           fi
-          files+=(chapters/*.qmd)
+          if [ -d chapters ]; then
+            while IFS= read -r chapter_file; do
+              files+=("$chapter_file")
+            done < <(find chapters -maxdepth 1 -type f -name '*.qmd' | sort)
+          fi
           if [ ${#files[@]} -eq 0 ]; then
             echo "No QMD files found for Reveal.js render; skipping."
             exit 0
           fi
-          quarto render "${files[@]}" --to revealjs
+          for file in "${files[@]}"; do
+            echo "Rendering Reveal.js for $file"
+            quarto render "$file" --to revealjs
+          done
 
       - name: Render PDF
         if: contains(github.event.pull_request.labels.*.name, 'pdf')
