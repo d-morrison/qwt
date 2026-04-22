@@ -40,6 +40,8 @@ jobs:
       # but we need it for any repository-specific setup
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: true
       
       # Install system dependencies required for R packages
       - name: Install system dependencies
