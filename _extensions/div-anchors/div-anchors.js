@@ -21,6 +21,8 @@ const theoremLikeClasses = new Set([
   "solution"
 ]);
 const inlineAnchorSeparator = "\u00A0";
+const maxAnchorRetryAttempts = 5;
+const anchorRetryDelayMs = 50;
 
 const isTheoremLikeDiv = (div) =>
   Array.from(div.classList).some((className) => theoremLikeClasses.has(className));
@@ -77,12 +79,14 @@ const moveTheoremDivAnchorsInline = () => {
   return hasPendingAnchors;
 };
 
-const moveTheoremDivAnchorsInlineWithRetry = (attemptsRemaining = 5) => {
+const moveTheoremDivAnchorsInlineWithRetry = (
+  attemptsRemaining = maxAnchorRetryAttempts
+) => {
   const hasPendingAnchors = moveTheoremDivAnchorsInline();
   if (hasPendingAnchors && attemptsRemaining > 0) {
     window.setTimeout(() => {
       moveTheoremDivAnchorsInlineWithRetry(attemptsRemaining - 1);
-    }, 50);
+    }, anchorRetryDelayMs);
   }
 };
 
