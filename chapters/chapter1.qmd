@@ -12,7 +12,7 @@ format:
 
 This is the first chapter of your website. Replace this content with your own.
 
-# Section 1.1
+# Section 1.1 {#sec-1.1}
 
 Add your content here.
 
