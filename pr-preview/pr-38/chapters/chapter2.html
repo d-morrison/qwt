@@ -98,9 +98,9 @@ div.csl-indent {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-f81f3c79f694eaf6f88ebcce70241f9e.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-873e6e24889f5b84a2497d6c262ef635.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../site_libs/bootstrap/bootstrap-dark-51f9ee0298c270ca7725fa318eed1645.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../site_libs/bootstrap/bootstrap-873e6e24889f5b84a2497d6c262ef635.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-c4af9d5cc9560aba4b75f44438dc8e4e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark-e0bf5562c0727902ff29b4740d84afe5.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap-c4af9d5cc9560aba4b75f44438dc8e4e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -400,6 +400,17 @@ window.Quarto = {
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
+<div class="preview-combined-banner">
+    <p style="margin: 0;">
+        <strong>📝 Preview Changes:</strong> This page has been modified in this pull request (~5% of content changed).
+        <br>
+        <strong>🎨 Highlighting Legend:</strong> 
+        <mark class="preview-text-changed" style="display: inline; padding: 1px 3px;">Modified text (yellow)</mark> shows changed words/phrases with tooltips of original text, 
+        <mark class="preview-text-added" style="display: inline; padding: 1px 3px;">added text (green)</mark> shows new content, and 
+        <mark class="preview-element-added" style="display: inline; padding: 1px 3px;">new sections (blue)</mark> highlight entirely new paragraphs.
+    </p>
+</div>
+
 
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -543,35 +554,6 @@ Important
 
 
 <!-- -->
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const equations = document.querySelectorAll("span[id^='eq-']");
-  equations.forEach(function (equation) {
-    if (equation.querySelector(".equation-anchor")) {
-      return;
-    }
-
-    if (!equation.querySelector(".math.display")) {
-      return;
-    }
-
-    const id = equation.getAttribute("id");
-    if (!id) {
-      return;
-    }
-
-    equation.classList.add("equation-anchor-target");
-
-    const anchor = document.createElement("a");
-    anchor.className = "equation-anchor";
-    anchor.href = "#" + id;
-    anchor.setAttribute("aria-label", "Permalink to this equation");
-    anchor.textContent = "#";
-    equation.appendChild(anchor);
-  });
-});
-</script>
 
 </section>
 
