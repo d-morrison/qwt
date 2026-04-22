@@ -59,7 +59,10 @@ jobs:
 
       - name: Render RevealJS slides
         if: contains(github.event.pull_request.labels.*.name, 'revealjs')
-        run: quarto render index.qmd chapters/*.qmd --to revealjs
+        run: |
+          shopt -s nullglob
+          files=(index.qmd chapters/*.qmd)
+          quarto render "${files[@]}" --to revealjs
 
       - name: Render PDF
         if: contains(github.event.pull_request.labels.*.name, 'pdf')
