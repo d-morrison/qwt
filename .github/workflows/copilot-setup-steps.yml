@@ -43,7 +43,13 @@ jobs:
         with:
           submodules: true
       
-      # Install system dependencies required for R packages
+      # Install system dependencies needed for this project, including:
+      #
+      # - C/C++ libraries required by R packages (libcurl, libssl, libxml2, etc.)
+      # - PDF processing tools (poppler-utils) for working with PDF documents
+      # - OCR tools (tesseract-ocr) for optical character recognition tasks
+      # - A computer algebra system (maxima) for symbolic math computations
+      # - Python pip for additional tooling
       - name: Install system dependencies
         run: |
           sudo apt-get update
