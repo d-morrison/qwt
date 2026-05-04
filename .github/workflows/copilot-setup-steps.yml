@@ -57,7 +57,7 @@ jobs:
             libfreetype6-dev \
             libpng-dev \
             libtiff5-dev \
-            libjpeg-dev \ 
+            libjpeg-dev \
             libglpk \
             poppler-utils \
             tesseract-ocr \
