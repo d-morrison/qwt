@@ -19,6 +19,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    env:
+      TZ: America/Los_Angeles
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -43,6 +45,9 @@ jobs:
             any::knitr
             any::rmarkdown
             any::tibble
+
+      - name: Set timezone to Pacific Time
+        run: echo "TZ=America/Los_Angeles" >> $GITHUB_ENV
 
       - name: Restore Quarto freezer
         if: ${{ !contains(github.event.pull_request.labels.*.name, 'clear-freezer') }}

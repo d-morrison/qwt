@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      TZ: America/Los_Angeles
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -29,6 +31,9 @@ jobs:
             any::knitr
             any::rmarkdown
             any::tibble
+
+      - name: Set timezone to Pacific Time
+        run: echo "TZ=America/Los_Angeles" >> $GITHUB_ENV
 
       - name: Render
         uses: quarto-dev/quarto-actions/render@v2

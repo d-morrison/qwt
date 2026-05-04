@@ -91,6 +91,9 @@ format:
     fig-height: 5
     fig-width: 7
 
+date: last-modified
+date-format: "[Last modified:] YYYY-MM-DD HH:mm:ss (z)"
+
 execute:
   warning: false
   message: false
