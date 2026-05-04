@@ -57,7 +57,14 @@ jobs:
             libfreetype6-dev \
             libpng-dev \
             libtiff5-dev \
-            libjpeg-dev
+            libjpeg-dev \
+            libglpk-dev \
+            poppler-utils \
+            tesseract-ocr \
+            tesseract-ocr-eng \
+            maxima \
+            python3-pip
+
       
       # Set up pandoc for documentation
       - name: Set up Pandoc
