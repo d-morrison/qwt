@@ -94,14 +94,14 @@
     "objectID": "chapters/chapter1.html#subsection-1.1.1",
     "href": "chapters/chapter1.html#subsection-1.1.1",
     "title": "Chapter 1: Introduction",
-    "section": "\n1.1 Subsection 1.1.1",
-    "text": "1.1 Subsection 1.1.1\nYou can include:\n\n\nLists like this one\n\nItalic and bold text\nCode snippets\nLinks: Quarto Documentation"
+    "section": "1.1 Subsection 1.1.1",
+    "text": "1.1 Subsection 1.1.1\nYou can include:\n\nLists like this one\nItalic and bold text\nCode snippets\nLinks: Quarto Documentation"
   },
   {
     "objectID": "chapters/chapter1-slides.html#subsection-1.1.1",
     "href": "chapters/chapter1-slides.html#subsection-1.1.1",
     "title": "Chapter 1: Introduction",
-    "section": "\n1.1 Subsection 1.1.1",
+    "section": "1.1 Subsection 1.1.1",
     "text": "1.1 Subsection 1.1.1"
   },
   {
