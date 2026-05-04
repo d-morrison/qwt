@@ -19,6 +19,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    env:
+      TZ: America/Los_Angeles
     steps:
       - name: Check out repository
         uses: actions/checkout@v4

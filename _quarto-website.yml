@@ -93,7 +93,6 @@ format:
 
 date: last-modified
 date-format: "[Last modified:] YYYY-MM-DD HH:mm:ss (z)"
-date-tz: America/Los_Angeles
 
 execute:
   warning: false
