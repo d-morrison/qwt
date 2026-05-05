@@ -85,9 +85,9 @@ function Pandoc(doc)
     }
 
     // Inject styles
-    var styleEl = document.createElement("style");
-    styleEl.textContent = css;
-    document.head.appendChild(styleEl);
+    var styleElement = document.createElement("style");
+    styleElement.textContent = css;
+    document.head.appendChild(styleElement);
 
     // Create the link element and append it directly to body so it stays
     // visible across all slides regardless of Reveal.js section visibility
@@ -98,6 +98,7 @@ function Pandoc(doc)
     anchor.href = htmlBase;
     anchor.target = "_blank";
     anchor.title = "View this section in the HTML notes";
+    anchor.setAttribute("aria-label", "View this section in the HTML notes");
     anchor.innerHTML = "&#128196;&nbsp;Notes";
     div.appendChild(anchor);
     document.body.appendChild(div);
