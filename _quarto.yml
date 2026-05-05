@@ -21,6 +21,7 @@ filters:
   - slidebreak
   - equation-anchors
   - revealjs-level1-slide-breaks.lua
+  - revealjs-html-links.lua
 
 knitr:
   opts_chunk:
