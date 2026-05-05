@@ -61,5 +61,54 @@
     "title": "Chapter 2: Advanced Topics",
     "section": "",
     "text": "This is the second chapter. Continue building your website with more chapters.\n\n1 Mathematical Equations\nYou can include mathematical equations using LaTeX syntax:\nInline equation: \\(E = mc^2\\)\nDisplay equation:\n\\[\n\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}\n\\tag{1}\\]\nDirect link to the equation anchor: See Equation 1.\n\n\n2 Tables\n\n\n\nTable 1: Example table caption\n\n\n\n\n\nColumn 1\nColumn 2\nColumn 3\n\n\n\n\nData 1\nData 2\nData 3\n\n\nData 4\nData 5\nData 6\n\n\n\n\n\n\n\n\n3 Figures\nYou can include images by placing them in the images/ directory:\n![Example image caption](images/your-image.png){#fig-example}\nThen reference the figure in text using @fig-example.\n\n\n4 Callouts\n\n\n\n\n\n\nNote\n\n\n\nThis is a note callout. Use it to highlight important information.\n\n\n\n\n\n\n\n\nTip\n\n\n\nThis is a tip callout. Share helpful suggestions with your readers.\n\n\n\n\n\n\n\n\nWarning\n\n\n\nThis is a warning callout. Alert readers to potential issues.\n\n\n\n\n\n\n\n\nImportant\n\n\n\nThis is an important callout. Emphasize critical information.\n\n\n\n\n5 Theorem-like Divs\n\nLemma 1 This is a sample lemma-style div using the standard class name lem.\n\n\nExample 1 This is a sample example-style div using the standard class name exm.\n\n\n\nReferences\n\n\n\n\n\n\n\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "index-slides.html#about-this-website",
+    "href": "index-slides.html#about-this-website",
+    "title": "Quarto Website Template",
+    "section": "0.1 About this website",
+    "text": "0.1 About this website"
+  },
+  {
+    "objectID": "index-slides.html#getting-started",
+    "href": "index-slides.html#getting-started",
+    "title": "Quarto Website Template",
+    "section": "0.2 Getting Started",
+    "text": "0.2 Getting Started"
+  },
+  {
+    "objectID": "index-slides.html#building-the-website",
+    "href": "index-slides.html#building-the-website",
+    "title": "Quarto Website Template",
+    "section": "0.3 Building the website",
+    "text": "0.3 Building the website"
+  },
+  {
+    "objectID": "index-slides.html#publishing-to-github-pages",
+    "href": "index-slides.html#publishing-to-github-pages",
+    "title": "Quarto Website Template",
+    "section": "0.4 Publishing to GitHub Pages",
+    "text": "0.4 Publishing to GitHub Pages"
+  },
+  {
+    "objectID": "index-slides.html#license",
+    "href": "index-slides.html#license",
+    "title": "Quarto Website Template",
+    "section": "0.5 License",
+    "text": "0.5 License"
+  },
+  {
+    "objectID": "index-slides.html#references",
+    "href": "index-slides.html#references",
+    "title": "Quarto Website Template",
+    "section": "References",
+    "text": "References"
+  },
+  {
+    "objectID": "chapters/chapter1-slides.html#subsection-1.1.1",
+    "href": "chapters/chapter1-slides.html#subsection-1.1.1",
+    "title": "Chapter 1: Introduction",
+    "section": "1.1 Subsection 1.1.1",
+    "text": "1.1 Subsection 1.1.1"
   }
 ]
