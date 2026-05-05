@@ -9,8 +9,8 @@ function Pandoc(doc)
   var css = [
     "#revealjs-html-link {",
     "  position: fixed;",
-    "  bottom: 12px;",
-    "  left: 8px;",
+    "  top: 8px;",
+    "  right: 8px;",
     "  z-index: 31;",
     "  font-size: 0.55em;",
     "  line-height: 1;",
@@ -99,7 +99,7 @@ function Pandoc(doc)
     anchor.target = "_blank";
     anchor.title = "View this section in the HTML notes";
     anchor.setAttribute("aria-label", "View this section in the HTML notes");
-    anchor.innerHTML = "&#128196;&nbsp;Notes";
+    anchor.innerHTML = "&#128196;&nbsp;Webpage version";
     div.appendChild(anchor);
     document.body.appendChild(div);
 
