@@ -20,6 +20,7 @@ filters:
   - div-anchors
   - slidebreak
   - equation-anchors
+  - pdf-table-pagebreaks.lua
   - revealjs-level1-slide-breaks.lua
   - revealjs-html-links.lua
 
