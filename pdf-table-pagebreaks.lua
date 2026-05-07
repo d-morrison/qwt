@@ -1,8 +1,13 @@
+-- Reserve extra baselines for caption/separators around the table body.
+local EXTRA_LINES_FOR_CAPTION = 4
+-- Protect very small tables when they appear near the bottom of a page.
+local MINIMUM_LINES_PROTECTED = 8
+
 local function in_pdf_output()
   return quarto.doc.is_format("pdf")
 end
 
-local function table_row_count(tbl)
+local function count_table_rows(tbl)
   local rows = 0
 
   if tbl.head and tbl.head.rows then
@@ -29,6 +34,10 @@ local function table_row_count(tbl)
 end
 
 local function latex_pagebreak_guard(lines_needed)
+  -- Generate LaTeX that checks remaining vertical space against the table's
+  -- estimated line budget and forces \newpage when space is insufficient.
+  -- \pagegoal is the target page height, \pagetotal is used height, and
+  -- \dimen0 stores the remaining space before the table starts.
   return string.format([[
 \par
 \begingroup
@@ -46,8 +55,13 @@ function Table(tbl)
     return nil
   end
 
-  local rows = table_row_count(tbl)
-  local lines_needed = math.max(rows + 4, 8)
+  -- Pandoc Table filter: prepend a LaTeX page-space guard before each table
+  -- so short tables move to the next page instead of splitting.
+  local rows = count_table_rows(tbl)
+  local lines_needed = math.max(
+    rows + EXTRA_LINES_FOR_CAPTION,
+    MINIMUM_LINES_PROTECTED
+  )
 
   return {
     pandoc.RawBlock("latex", latex_pagebreak_guard(lines_needed)),
