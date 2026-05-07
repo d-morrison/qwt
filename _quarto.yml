@@ -20,9 +20,16 @@ filters:
   - div-anchors
   - slidebreak
   - equation-anchors
-  - pdf-table-pagebreaks.lua
   - revealjs-level1-slide-breaks.lua
   - revealjs-html-links.lua
+
+format:
+  pdf:
+    include-in-header:
+      text: |
+        \usepackage{needspace}
+        \usepackage{etoolbox}
+        \AtBeginEnvironment{longtable}{\Needspace{8\baselineskip}}
 
 knitr:
   opts_chunk:
