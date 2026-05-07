@@ -23,6 +23,14 @@ filters:
   - revealjs-level1-slide-breaks.lua
   - revealjs-html-links.lua
 
+format:
+  pdf:
+    include-in-header:
+      text: |
+        \usepackage{needspace}
+        \usepackage{etoolbox}
+        \AtBeginEnvironment{longtable}{\Needspace{8\baselineskip}}
+
 knitr:
   opts_chunk:
     collapse: true
