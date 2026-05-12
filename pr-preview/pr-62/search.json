@@ -42,27 +42,6 @@
     "text": "Add your license information here."
   },
   {
-    "objectID": "chapters/chapter2.html",
-    "href": "chapters/chapter2.html",
-    "title": "Chapter 2: Advanced Topics",
-    "section": "",
-    "text": "This is the second chapter. Continue building your website with more chapters.\n\n1 Mathematical Equations\nYou can include mathematical equations using LaTeX syntax:\nInline equation: \\(E = mc^2\\)\nDisplay equation:\n\\[\n\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}\n\\tag{1}\\]\nDirect link to the equation anchor: See Equation 1.\n\n\n2 Tables\n\n\n\nTable 1: Example table caption\n\n\n\n\n\nColumn 1\nColumn 2\nColumn 3\n\n\n\n\nData 1\nData 2\nData 3\n\n\nData 4\nData 5\nData 6\n\n\n\n\n\n\n\n\n3 Figures\nYou can include images by placing them in the images/ directory:\n![Example image caption](images/your-image.png){#fig-example}\nThen reference the figure in text using @fig-example.\n\n\n4 Callouts\n\n\n\n\n\n\nNote\n\n\n\nThis is a note callout. Use it to highlight important information.\n\n\n\n\n\n\n\n\nTip\n\n\n\nThis is a tip callout. Share helpful suggestions with your readers.\n\n\n\n\n\n\n\n\nWarning\n\n\n\nThis is a warning callout. Alert readers to potential issues.\n\n\n\n\n\n\n\n\nImportant\n\n\n\nThis is an important callout. Emphasize critical information.\n\n\n\n\n5 Theorem-like Divs\n\nLemma 1 This is a sample lemma-style div using the standard class name lem.\n\n\nExample 1 This is a sample example-style div using the standard class name exm.\n\n\n\nReferences\n\n\n\n\n\n\n\n\n\n\n\n\n\n Back to top"
-  },
-  {
-    "objectID": "chapters/chapter1.html",
-    "href": "chapters/chapter1.html",
-    "title": "Chapter 1: Introduction",
-    "section": "",
-    "text": "This is the first chapter of your website. Replace this content with your own."
-  },
-  {
-    "objectID": "chapters/chapter1.html#subsection-1.1.1",
-    "href": "chapters/chapter1.html#subsection-1.1.1",
-    "title": "Chapter 1: Introduction",
-    "section": "1.1 Subsection 1.1.1",
-    "text": "1.1 Subsection 1.1.1\nYou can include:\n\nLists like this one\nItalic and bold text\nCode snippets\nLinks: Quarto Documentation"
-  },
-  {
     "objectID": "chapters/protected-page.html",
     "href": "chapters/protected-page.html",
     "title": "Protected Page",
@@ -81,7 +60,7 @@
     "href": "chapters/protected-page.html#protected-content",
     "title": "Protected Page",
     "section": "0.2 Protected Content",
-    "text": "0.2 Protected Content\nHere’s some example protected content:\n\n0.2.1 Features Demonstrated\nYou can include all standard Quarto features on a protected page:\n\nLists with various formatting\nItalic and bold text\nCode snippets inline\nLinks: Quarto Documentation\n\n\n\n0.2.2 Code Blocks\nYou can include code blocks:\n# Example Python code on protected page\ndef secret_function():\n    print(\"This is protected content!\")\n    return \"Secret data\"\n\nresult = secret_function()\nprint(result)\n\n\n0.2.3 Mathematical Equations\nYou can use LaTeX equations:\n\\[\nE = mc^2\n\\]\nOr inline math like \\(\\pi \\approx 3.14159\\).\n\n\n0.2.4 Callouts\n\n\n\n\n\n\nNote\n\n\n\nThis is a note callout in the protected content.\n\n\n\n\n\n\n\n\nTipTip for Protected Content\n\n\n\nOnly users with the correct password can see this tip!\n\n\n\n\n0.2.5 Theorem-Style Blocks\n\nTheorem 1 (Protected Theorem) This theorem is only visible to authenticated users."
+    "text": "0.2 Protected Content\nHere’s some example protected content:\n\n0.2.1 Features Demonstrated\nYou can include all standard Quarto features on a protected page:\n\nLists with various formatting\nItalic and bold text\nCode snippets inline\nLinks: Quarto Documentation\n\n\n\n0.2.2 Code Blocks\nYou can include code blocks:\n# Example Python code on protected page\ndef secret_function():\n    print(\"This is protected content!\")\n    return \"Secret data\"\n\nresult = secret_function()\nprint(result)\n\n\n0.2.3 Mathematical Equations\nYou can use LaTeX equations:\n\\[\nE = mc^2\n\\]\nOr inline math like \\(\\pi \\approx 3.14159\\).\n\n\n0.2.4 Callouts\n\n\n\n\n\n\nNote\n\n\n\nThis is a note callout in the protected content.\n\n\n\n\n\n\n\n\nTipTip for Protected Content\n\n\n\nOnly users with the correct password can see this tip!\n\n\n\n\n0.2.5 Theorem-Style Blocks\n\n\n\n\n\n\n\nTheorem 1 (Protected Theorem) This theorem is only visible to authenticated users."
   },
   {
     "objectID": "chapters/protected-page.html#security-note",
@@ -89,5 +68,33 @@
     "title": "Protected Page",
     "section": "0.3 Security Note",
     "text": "0.3 Security Note\nThis is a client-side password protection mechanism. The page content is still downloaded to the user’s browser; it’s just hidden until the correct password is entered. For truly sensitive information, use:\n\nServer-side authentication\nContent delivery that requires server validation\nA backend service with proper session management\n\nFor this demo, the simple client-side approach is sufficient."
+  },
+  {
+    "objectID": "chapters/chapter1.html",
+    "href": "chapters/chapter1.html",
+    "title": "Chapter 1: Introduction",
+    "section": "",
+    "text": "This is the first chapter of your website. Replace this content with your own."
+  },
+  {
+    "objectID": "chapters/chapter1.html#subsection-1.1.1",
+    "href": "chapters/chapter1.html#subsection-1.1.1",
+    "title": "Chapter 1: Introduction",
+    "section": "1.1 Subsection 1.1.1",
+    "text": "1.1 Subsection 1.1.1\nYou can include:\n\nLists like this one\nItalic and bold text\nCode snippets\nLinks: Quarto Documentation"
+  },
+  {
+    "objectID": "chapters/chapter2.html",
+    "href": "chapters/chapter2.html",
+    "title": "Chapter 2: Advanced Topics",
+    "section": "",
+    "text": "This is the second chapter. Continue building your website with more chapters.\n\n1 Mathematical Equations\nYou can include mathematical equations using LaTeX syntax:\nInline equation: \\(E = mc^2\\)\nDisplay equation:\n\\[\n\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}\n\\tag{1}\\]\nDirect link to the equation anchor: See Equation 1.\n\n\n2 Tables\n\n\n\nTable 1: Example table caption\n\n\n\n\n\nColumn 1\nColumn 2\nColumn 3\n\n\n\n\nData 1\nData 2\nData 3\n\n\nData 4\nData 5\nData 6\n\n\n\n\n\n\n\n\n3 Figures\nYou can include images by placing them in the images/ directory:\n![Example image caption](images/your-image.png){#fig-example}\nThen reference the figure in text using @fig-example.\n\n\n4 Callouts\n\n\n\n\n\n\nNote\n\n\n\nThis is a note callout. Use it to highlight important information.\n\n\n\n\n\n\n\n\nTip\n\n\n\nThis is a tip callout. Share helpful suggestions with your readers.\n\n\n\n\n\n\n\n\nWarning\n\n\n\nThis is a warning callout. Alert readers to potential issues.\n\n\n\n\n\n\n\n\nImportant\n\n\n\nThis is an important callout. Emphasize critical information.\n\n\n\n\n5 Theorem-like Divs\n\n\n\n\n\n\n\nLemma 1  \n\n\n\n\n\nLemLem\n\n\n\nThis is a sample lemma-style div using the standard class name lem.\n\n\n\n\n\n\n\n\n\n\n\n\nExample 1  \n\n\n\n\n\nExmExm\n\n\n\nThis is a sample example-style div using the standard class name exm.\n\n\n\n\n\n\n\nReferences\n\n\n\n\n\n\n\n\n\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "chapters/theorem-examples.html",
+    "href": "chapters/theorem-examples.html",
+    "title": "Theorem Examples",
+    "section": "",
+    "text": "This chapter demonstrates all the theorem-like environments available through the callouty-theorem and custom-callout extensions.\n\n1 Theorems\n\n\n\n\n\n\n\nTheorem 1 (Pythagorean Theorem) In a right triangle with legs of length \\(a\\) and \\(b\\) and hypotenuse of length \\(c\\), we have: \\[a^2 + b^2 = c^2\\]\n\n\n\n\nSee Theorem 1 for the famous Pythagorean theorem.\n\n\n2 Lemmas\n\n\n\n\n\n\n\nLemma 1 (Fundamental Lemma) Every non-empty subset of \\(\\mathbb{N}\\) has a smallest element.\n\n\n\n\nThe result in Lemma 1 is used to prove many theorems in number theory.\n\n\n3 Corollaries\n\n\n\n\n\n\n\nCorollary 1 (Rational Root Test Corollary) If \\(p/q\\) is a rational root of the polynomial \\(a_n x^n + \\cdots + a_1 x + a_0\\) with integer coefficients, then \\(p\\) divides \\(a_0\\) and \\(q\\) divides \\(a_n\\).\n\n\n\n\nCorollary 1 follows directly from the Rational Root Theorem.\n\n\n4 Propositions\n\n\n\n\n\n\n\nProposition 1 (Triangle Inequality) For any real numbers \\(x\\) and \\(y\\): \\[|x + y| \\leq |x| + |y|\\]\n\n\n\n\nThe triangle inequality (Proposition 1) is fundamental in analysis.\n\n\n5 Conjectures\n\n\n\n\n\n\n\nConjecture 1 (Goldbach’s Conjecture) Every even integer greater than 2 can be expressed as the sum of two prime numbers.\n\n\n\n\nConjecture 1 remains one of the oldest unsolved problems in number theory.\n\n\n6 Definitions\n\n\n\n\n\n\n\nDefinition 1 (Derivative) The derivative of a function \\(f\\) at a point \\(x\\) is defined as: \\[f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}\\] provided this limit exists.\n\n\n\n\nSee Definition 1 for the formal definition of a derivative.\n\n\n7 Examples\n\n\n\n\n\n\n\nExample 1 (Solving a Quadratic Equation) Solve \\(x^2 - 5x + 6 = 0\\).\nWe can factor this as \\((x-2)(x-3) = 0\\), so the solutions are \\(x = 2\\) and \\(x = 3\\).\n\n\n\n\nExample 1 shows how to solve a simple quadratic equation.\n\n\n8 Exercises\n\n\n\n\n\n\n\nExercise 1 (Integration Practice) Compute the following integral: \\[\\int_0^1 x^2 \\, dx\\]\n\n\n\n\nTry Exercise 1 to practice basic integration.\n\n\n9 Proofs\n\n\n\n\n\n\nProofProof (Proof of the Pythagorean Theorem)\n\n\n\n\n\n\nProof (Proof of the Pythagorean Theorem). Consider a square with side length \\(a+b\\). We can divide this square into four right triangles and a central square with side length \\(c\\).\nThe area equations show: \\[a^2 + b^2 = c^2\\]\n\n\n\n\n\n\n\n\n\n\nProofProof (Proof that the derivative of a constant is zero)\n\n\n\n\n\n\nProof (Proof that the derivative of a constant is zero). Let \\(f(x) = c\\) for some constant \\(c\\). Then \\(f'(x) = 0\\).\n\n\n\n\n\n\n10 Solutions\n\n\n\n\n\n\nSolutionSolution (Solution to Exercise on Integration)\n\n\n\n\n\n\nSolution 1 (Solution to Exercise on Integration). We use the power rule for integration: \\[\\int_0^1 x^2 \\, dx = \\left[\\frac{x^3}{3}\\right]_0^1 = \\frac{1}{3}\\]\n\n\n\n\n\n\n\n\n\n\nSolutionSolution (Alternative Solution to Quadratic Equation)\n\n\n\n\n\n\nSolution (Alternative Solution to Quadratic Equation). For the quadratic equation, we can use the quadratic formula: \\[x = \\frac{5 \\pm 1}{2}\\]\nThis gives us \\(x = 3\\) or \\(x = 2\\).\n\n\n\n\n\n\n11 Remarks\n\n\n\n\n\n\nRemarkRemark (Convergence Note)\n\n\n\n\n\n\nRemark 1 (Convergence Note). The limit in Definition 1 may not exist for all functions at all points. For example, the absolute value function \\(|x|\\) is not differentiable at \\(x=0\\).\n\n\n\n\nRemark 1 highlights an important limitation of the derivative definition.\n\n\n12 Mixed Example with Theorem and Solution\nHere’s an example that combines multiple theorem types:\n\n\n\n\n\n\n\nTheorem 2 (Mean Value Theorem) If \\(f\\) is continuous on \\([a,b]\\) and differentiable on \\((a,b)\\), then there exists a point \\(c \\in (a,b)\\) such that: \\[f'(c) = \\frac{f(b) - f(a)}{b - a}\\]\n\n\n\n\n\n\n\n\n\n\n\nExercise 2 (Applying the Mean Value Theorem) Let \\(f(x) = x^2\\) on \\([0, 2]\\). Find the value of \\(c\\) guaranteed by the Mean Value Theorem (Theorem 2).\n\n\n\n\n\n\n\n\n\n\nSolutionSolution (Solution to Mean Value Theorem Exercise)\n\n\n\n\n\n\nSolution 2 (Solution to Mean Value Theorem Exercise). We have \\(f(x) = x^2\\), so \\(f'(x) = 2x\\).\nBy the Mean Value Theorem: \\[f'(c) = \\frac{f(2) - f(0)}{2 - 0} = \\frac{4 - 0}{2} = 2\\]\nSince \\(f'(c) = 2c\\), we need: \\[2c = 2\\] \\[c = 1\\]\nTherefore, \\(c = 1\\) is the value guaranteed by the Mean Value Theorem.\n\n\n\n\n\n\nReferences\n\n\n\n\n\n\n\n\n\n\n Back to top"
   }
 ]
