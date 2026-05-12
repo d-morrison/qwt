@@ -25,6 +25,9 @@ filters:
 
 format:
   pdf:
+    filters:
+      - callouty-theorem
+      - coatless-quarto/custom-callout
     include-in-header:
       text: |
         \usepackage{needspace}
