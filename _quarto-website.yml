@@ -132,7 +132,7 @@ custom-callout:
 format:
   html:
     filters:
-      - callouty-theorem
+      - sun123zxy/callouty-theorem
       - coatless-quarto/custom-callout
     theme:
       light: cosmo
@@ -156,7 +156,7 @@ format:
     df-print: paged
   docx:
     filters:
-      - callouty-theorem
+      - sun123zxy/callouty-theorem
       - coatless-quarto/custom-callout
     number-sections: true
     number-depth: 3
