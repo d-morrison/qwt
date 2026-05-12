@@ -29,15 +29,114 @@ website:
             href: chapters/chapter1.qmd
           - text: "Chapter 2: Advanced Topics"
             href: chapters/chapter2.qmd
+          - text: "Theorem Examples"
+            href: chapters/theorem-examples.qmd
           - text: "Protected Page 🔒"
             href: chapters/protected-page.qmd
+
     right:
       - icon: github
         href: https://github.com/UCD-SERG/qwt
         aria-label: GitHub
 
+callouty-theorem:
+  thm:
+    override-title: false # do not have the filter set
+                          # or override a callout title
+    callout: # parameters of the wrapping callout
+             # see Quarto callout docs for details
+      type: lem  # same color as lem (royal blue); color set in custom-callout block below
+      appearance: minimal
+  lem:
+    override-title: false
+    callout:
+      type: lem
+      appearance: minimal
+  cor:
+    override-title: false
+    callout:
+      type: cor
+      appearance: minimal
+  prp:
+    override-title: false
+    callout:
+      type: prp
+      appearance: minimal
+  cnj:
+    override-title: false
+    callout:
+      type: cnj
+      appearance: minimal
+  def:
+    override-title: false
+    callout:
+      type: def
+      appearance: minimal
+  exm:
+    override-title: false
+    callout:
+      type: exm
+      appearance: minimal
+  exr:
+    override-title: false
+    callout:
+      type: exr
+      appearance: minimal
+  proof: # also support wrapping proof-like environments
+    override-title: true # override the callout title with
+                         # the proof-type label,
+                         # appending the element name when provided
+    callout:
+      type: proof
+      appearance: default
+      collapse: true
+      icon: true
+  solution:
+    override-title: true
+    callout:
+      type: solution
+      appearance: default
+      collapse: true
+      icon: false
+  remark:
+    override-title: true
+    callout:
+      type: remark
+      appearance: default
+      collapse: false
+      icon: true
+
+# Color palette for theorem/proof environments.
+# The coatless-quarto/custom-callout extension reads this block and injects
+# CSS (HTML) and LaTeX \definecolor (PDF) so each type gets a unique color.
+# Rules: no reds; thm shares lem's royal blue.
+custom-callout:
+  lem:
+    color: "#1565C0"  # royal blue (also used for thm)
+  cor:
+    color: "#00838F"  # dark cyan
+  prp:
+    color: "#827717"  # dark olive
+  cnj:
+    color: "#558B2F"  # grass green
+  def:
+    color: "#1B5E20"  # forest green (very distinct from theorem types)
+  exm:
+    color: "#6A1B9A"  # deep purple
+  exr:
+    color: "#FFA500"  # orange
+  proof:
+    color: "#37474F"  # blue-grey slate
+  solution:
+    color: "#4E342E"  # dark cocoa
+  remark:
+    color: "#AD1457"  # dark magenta
+
 format:
   html:
+    filters:
+      - sun123zxy/callouty-theorem
+      - coatless-quarto/custom-callout
     theme:
       light: cosmo
       dark: darkly
@@ -59,6 +158,9 @@ format:
     number-depth: 3
     df-print: paged
   docx:
+    filters:
+      - sun123zxy/callouty-theorem
+      - coatless-quarto/custom-callout
     number-sections: true
     number-depth: 3
     df-print: tibble
