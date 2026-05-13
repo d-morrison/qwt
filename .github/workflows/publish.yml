@@ -35,8 +35,10 @@ jobs:
       - name: Set timezone to Pacific Time
         run: echo "TZ=America/Los_Angeles" >> $GITHUB_ENV
 
-      - name: Render
+      - name: Render HTML
         uses: quarto-dev/quarto-actions/render@v2
+        with:
+          to: html
 
       - name: Save Quarto freezer
         uses: actions/cache/save@v4
