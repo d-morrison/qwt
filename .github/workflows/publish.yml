@@ -41,6 +41,8 @@ jobs:
 
       - name: Render
         uses: quarto-dev/quarto-actions/render@v2
+        with:
+          to: html
 
       - name: Save Quarto freezer
         uses: actions/cache/save@v4
