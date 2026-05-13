@@ -155,9 +155,6 @@ format:
     number-depth: 3
     df-print: paged
   docx:
-    filters:
-      - sun123zxy/callouty-theorem
-      - coatless-quarto/custom-callout
     number-sections: true
     number-depth: 3
     df-print: tibble
