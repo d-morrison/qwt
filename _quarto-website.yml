@@ -12,6 +12,7 @@ website:
   title: "Quarto Website Template"
   site-url: https://ucd-serg.github.io/qwt/
   description: "A template for creating websites with Quarto"
+  llms: true
   page-footer:
     center: "Built with [Quarto](https://quarto.org/)"
   back-to-top-navigation: true
