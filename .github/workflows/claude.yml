@@ -57,13 +57,23 @@ jobs:
           # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
           # prompt: 'Update the pull request description to include a summary of changes.'
 
-          # Allow the git/gh commands Claude needs to push a branch and open a PR,
-          # plus the helpers most useful on this Quarto/R repo. `git push` is
-          # narrowed to `origin` and dangerous variants (force / delete /
-          # mirror / all-tags) are explicitly disallowed so a write-scoped
-          # GITHUB_TOKEN can't be used to rewrite or remove refs.
+          # Allow the git/gh commands Claude needs to push a branch and open a
+          # PR, plus the helpers most useful on this Quarto/R repo. `git push`
+          # is narrowed to `origin` and destructive flag variants are
+          # disallowed so a write-scoped GITHUB_TOKEN can't be used to rewrite
+          # or remove refs. The `+ref` force-update refspec is also denied;
+          # the `:ref` delete-refspec form can't be expressed in Claude Code's
+          # pattern syntax (a trailing `:*` is an alias for trailing ` *` —
+          # see https://code.claude.com/docs/en/permissions#wildcard-patterns)
+          # so destructive deletes are caught instead by GitHub branch
+          # protection on the default branch.
+          #
+          # `Rscript -e` is restricted to specific safe namespaces — a bare
+          # `Rscript -e *` would let Claude shell out via `system()` and
+          # bypass the git-push deny list. Extend this list if a workflow
+          # legitimately needs another helper (e.g. `roxygen2::*`).
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options.
           claude_args: |
-            --allowedTools "Bash(quarto render),Bash(quarto check),Bash(Rscript -e *),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git add:*),Bash(git commit:*),Bash(git push origin:*),Bash(git push -u origin:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr create:*),Bash(gh pr edit:*),Bash(gh issue view:*)" --disallowedTools "Bash(git push --force:*),Bash(git push -f:*),Bash(git push --delete:*),Bash(git push -d:*),Bash(git push --mirror:*),Bash(git push --tags:*),Bash(git push --all:*)"
+            --allowedTools "Bash(quarto render),Bash(quarto check),Bash(Rscript -e 'lintr::lint*'),Bash(Rscript -e 'devtools::check*'),Bash(Rscript -e 'devtools::document*'),Bash(Rscript -e 'pkgdown::build*'),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git add:*),Bash(git commit:*),Bash(git push origin:*),Bash(git push -u origin:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr create:*),Bash(gh pr edit:*),Bash(gh issue view:*)" --disallowedTools "Bash(git push --force:*),Bash(git push -f:*),Bash(git push --delete:*),Bash(git push -d:*),Bash(git push --mirror:*),Bash(git push --tags:*),Bash(git push --all:*),Bash(git push origin +*),Bash(git push -u origin +*)"
 
