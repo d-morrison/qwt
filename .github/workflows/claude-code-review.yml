@@ -3,7 +3,8 @@
 # Runs on every PR open / push, posts review via the upstream code-review
 # plugin. Requires the CLAUDE_CODE_OAUTH_TOKEN repository secret.
 #
-# Skips PRs from Dependabot and from drafts. Project guidance is in CLAUDE.md.
+# Skips drafts, Dependabot bumps, and fork PRs (fork PRs can't read repo
+# secrets). Project guidance is in CLAUDE.md.
 
 name: Claude Code Review
 
