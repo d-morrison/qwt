@@ -12,11 +12,11 @@ Authoritative style guide: [UCD-SERG Lab Manual](https://ucd-serg.github.io/lab-
 
 - `index.qmd`, `chapters/`, `appendix-*.qmd` — Quarto source pages
 - `_quarto.yml`, `_quarto-website.yml` — Quarto project + website config
-- `_extensions/`, `macros/` — Quarto extensions and shortcode/macro submodules
+- `_extensions/` — vendored Quarto extensions; `macros/` — git submodule of shortcode/macro definitions
 - `R/`, `man/`, `DESCRIPTION`, `NAMESPACE` — the project is also a small R package
 - `references.bib` — BibTeX bibliography
 - `styles.css` — site styling
-- `.github/workflows/` — CI (publish, link check, spell check, lint, PR preview, AI agents)
+- `.github/workflows/` — CI workflow definitions
 - `.github/scripts/` — helper scripts used by workflows
 - `_site/`, `_freeze/`, `.quarto/` — build artifacts (do not edit by hand)
 
@@ -33,7 +33,7 @@ Mirrors [`.github/copilot-instructions.md`](.github/copilot-instructions.md). Ke
 
 - **Don't edit generated files**: `README.md` is built from `README.Rmd`; `_site/` and `_freeze/` are build outputs.
 - **Local preview**: `quarto preview` (live reload). Full build: `quarto render`.
-- **Submodules**: `macros/` and some extensions are git submodules. Run `git submodule update --init --recursive` after cloning.
+- **Submodules**: `macros/` is a git submodule (see `.gitmodules`). Run `git submodule update --init --recursive` after cloning.
 - **Spell check**: words go in `inst/WORDLIST` (see `.github/workflows/check-spelling.yaml`). Update the wordlist instead of disabling the check.
 - **Link check**: tuned in `lychee.toml`; prefer fixing broken links over adding exceptions.
 

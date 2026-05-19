@@ -12,11 +12,14 @@ on:
 
 jobs:
   claude:
+    # Only trigger for trusted authors (OWNER / MEMBER / COLLABORATOR).
+    # Without this, anyone who can comment on a public issue or PR could
+    # trigger an LLM run with write-scoped GITHUB_TOKEN permissions.
     if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude') && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude') && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude') && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association)) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')) && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association))
     runs-on: ubuntu-latest
     permissions:
       contents: write       # so Claude can push a branch
@@ -44,9 +47,12 @@ jobs:
           # prompt: 'Update the pull request description to include a summary of changes.'
 
           # Allow the git/gh commands Claude needs to push a branch and open a PR,
-          # plus the helpers most useful on this Quarto/R repo.
+          # plus the helpers most useful on this Quarto/R repo. `git push` is
+          # narrowed to `origin` and dangerous variants (force / delete /
+          # mirror / all-tags) are explicitly disallowed so a write-scoped
+          # GITHUB_TOKEN can't be used to rewrite or remove refs.
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options.
           claude_args: |
-            --allowedTools "Bash(quarto render),Bash(quarto check),Bash(Rscript -e *),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr create:*),Bash(gh pr edit:*),Bash(gh issue view:*)"
+            --allowedTools "Bash(quarto render),Bash(quarto check),Bash(Rscript -e *),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git add:*),Bash(git commit:*),Bash(git push origin:*),Bash(git push -u origin:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr create:*),Bash(gh pr edit:*),Bash(gh issue view:*)" --disallowedTools "Bash(git push --force:*),Bash(git push -f:*),Bash(git push --delete:*),Bash(git push -d:*),Bash(git push --mirror:*),Bash(git push --tags:*),Bash(git push --all:*)"
 
