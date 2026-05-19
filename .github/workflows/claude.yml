@@ -1,3 +1,13 @@
+# Claude Code GitHub Action
+#
+# Responds to "@claude" mentions in issues, issue comments, PR review comments,
+# and PR reviews. Requires the CLAUDE_CODE_OAUTH_TOKEN repository secret (set
+# up by `/install-github-app` from Claude Code, or manually in repo settings).
+#
+# Project guidance for Claude lives in CLAUDE.md at the repo root.
+#
+# Upstream template: https://github.com/anthropics/claude-code-action
+
 name: Claude Code
 
 on:
@@ -32,6 +42,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          submodules: recursive
 
       - name: Run Claude Code
         id: claude
