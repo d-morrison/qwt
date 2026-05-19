@@ -118,7 +118,15 @@ branch.
     - Go to Settings → Pages
     - Under "Build and deployment", set Source to "GitHub Actions"
 
-2.  **Apply branch rulesets** (requires admin access):
+2.  **Push to main branch**:
+
+    ``` bash
+    git add .
+    git commit -m "Initial website setup"
+    git push origin main
+    ```
+
+3.  **Apply branch rulesets** (requires admin access):
 
     ``` bash
     .github/scripts/apply-rulesets.sh
@@ -127,14 +135,6 @@ branch.
     This protects `main` against direct pushes / force-pushes /
     deletion and requires a PR to merge. See
     `.github/rulesets/README.md` for details.
-
-3.  **Push to main branch**:
-
-    ``` bash
-    git add .
-    git commit -m "Initial website setup"
-    git push origin main
-    ```
 
 4.  **Wait for the workflow** to complete (check the Actions tab)
 

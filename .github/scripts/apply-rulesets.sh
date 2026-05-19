@@ -22,7 +22,7 @@ fi
 
 # Map of existing ruleset name -> id, so we can PUT updates instead of
 # creating duplicates.
-existing=$(gh api "repos/$repo/rulesets" --jq '[.[] | {name, id}]')
+existing=$(gh api --paginate "repos/$repo/rulesets" --jq '[.[] | {name, id}]' | jq -s 'add // []')
 
 for f in "${files[@]}"; do
   name=$(jq -r .name "$f")
