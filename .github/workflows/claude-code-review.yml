@@ -3,11 +3,10 @@
 # Runs the upstream `code-review@claude-code-plugins` plugin so we pick up
 # any improvements to the canonical review skill, then layers a
 # Quarto/R-specific addendum on top so the reviewer also catches issues
-# particular to this template repo. A pre-step deletes the prior Claude
-# sticky comment so the new sticky lands at the bottom of the PR
-# conversation instead of getting buried in GitHub's folded-comments
-# section (the `deleted a comment from claude Bot` timeline entry is
-# expected, not a bug).
+# particular to this template repo.
+#
+# Each run posts a fresh review comment; prior reviews are left in place
+# so the PR keeps a visible history rather than a rolling sticky.
 #
 # Skips PRs from Dependabot and from drafts. Project guidance is in CLAUDE.md.
 # Requires the CLAUDE_CODE_OAUTH_TOKEN repository secret.
@@ -32,31 +31,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write  # post sticky + inline review comments
-      issues: write         # delete-comment API is under the issues scope
+      pull-requests: write  # post review + inline comments
+      issues: read
       id-token: write
 
     steps:
-      - name: Delete previous Claude sticky comment
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.issue.number,
-            });
-            const prior = comments.find(
-              c => c.user.login === 'claude[bot]' || c.user.login === 'claude'
-            );
-            if (prior) {
-              await github.rest.issues.deleteComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: prior.id,
-              });
-            }
-
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -70,7 +49,6 @@ jobs:
           plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
           plugins: 'code-review@claude-code-plugins'
           track_progress: 'true'
-          use_sticky_comment: 'true'
           prompt: |
             /code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}
 
