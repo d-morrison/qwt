@@ -8,8 +8,9 @@
 # Each run posts a fresh review comment; prior reviews are left in place
 # so the PR keeps a visible history rather than a rolling sticky.
 #
-# Skips PRs from Dependabot and from drafts. Project guidance is in CLAUDE.md.
-# Requires the CLAUDE_CODE_OAUTH_TOKEN repository secret.
+# Skips drafts, Dependabot bumps, and fork PRs (fork PRs can't read repo
+# secrets). Project guidance is in CLAUDE.md. Requires the
+# CLAUDE_CODE_OAUTH_TOKEN repository secret.
 
 name: Claude Code Review
 
