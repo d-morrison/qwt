@@ -1,7 +1,8 @@
 # Automatic Claude Code review of pull requests.
 #
-# Runs on every PR open / push, posts review via the upstream code-review
-# plugin. Requires the CLAUDE_CODE_OAUTH_TOKEN repository secret.
+# Runs on every PR open / push, leaves inline comments on the diff, and
+# posts a top-level summary. Requires the CLAUDE_CODE_OAUTH_TOKEN
+# repository secret.
 #
 # Skips PRs from Dependabot and from drafts. Project guidance is in CLAUDE.md.
 
@@ -25,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: write  # so Claude can leave inline + top-level review comments
       issues: read
       id-token: write
 
@@ -36,14 +37,48 @@ jobs:
           fetch-depth: 1
           submodules: recursive
 
-      - name: Run Claude Code Review
-        id: claude-review
+      - name: Claude PR review
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
-          plugins: 'code-review@claude-code-plugins'
-          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
-          # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
+          track_progress: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Review this pull request against the conventions in CLAUDE.md and
+            .github/copilot-instructions.md. This is a Quarto website template
+            (qwt) — small, prose-heavy, and re-used as a template for downstream
+            books — so prioritize:
+
+            1. **Quarto / prose correctness**
+               - `.qmd` syntax: chunk options use `#|` directives, fenced
+                 blocks are balanced, cross-refs (`@fig-`, `@tbl-`, `@sec-`)
+                 resolve to defined labels.
+               - Bullet-list rule: 3+ items use bullets with a blank line above.
+               - `code-fold: true` is used on chunks where the output (not the
+                 code) is the point, and avoided on tutorial code.
+
+            2. **R code**
+               - Conforms to `.lintr.R` settings (snake_case, line length, etc.).
+               - No new package dependencies without justification — every
+                 dependency added here lands in every downstream book.
+
+            3. **Build hygiene**
+               - No accidental commits of `_site/`, `_freeze/`, or `.quarto/`.
+               - `README.md` is generated; edits should go to `README.Rmd`.
+               - Bibliography entries in `references.bib` are well-formed BibTeX.
+
+            4. **CI / template impact**
+               - Workflow changes don't break the `copilot-setup-steps.yml`
+                 contract or the publish/preview pipelines.
+               - Spell-check / link-check failures are fixed at the source
+                 (wordlist or content) rather than suppressed.
+
+            Use inline comments for line-specific feedback and a top-level
+            comment for the overall summary. Skip generic praise — be concrete.
+            If the PR looks clean, say so briefly.
+
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*)"
 
