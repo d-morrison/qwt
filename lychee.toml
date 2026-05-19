@@ -25,4 +25,6 @@ exclude = [
   "https://localhost.*",
   "http://127.0.0.1.*",
   "https://127.0.0.1.*",
+  # quarto.org is a trusted site but may be unreachable from CI runners
+  "https://quarto.org/.*",
 ]
