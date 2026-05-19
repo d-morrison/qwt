@@ -19,9 +19,13 @@ on:
 
 jobs:
   claude-review:
-    # Skip drafts and Dependabot PRs — neither benefits from an LLM review
-    # and Dependabot bumps would burn API spend on every patch release.
-    if: github.event.pull_request.draft == false && github.event.pull_request.user.login != 'dependabot[bot]'
+    # Skip drafts, Dependabot bumps, and fork PRs. Fork PRs can't read repo
+    # secrets, so `CLAUDE_CODE_OAUTH_TOKEN` would be empty and the run would
+    # fail with a noisy red check — bail early instead.
+    if: |
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.user.login != 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: read
