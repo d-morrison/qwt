@@ -245,8 +245,12 @@ ensures all citations are properly traceable.
     ├── README.md               # This file
     ├── macros/                 # Git submodule: d-morrison/macros
     └── .github/
+        ├── rulesets/            # Branch ruleset definitions
+        │   ├── main.json        # Default branch ruleset
+        │   └── README.md        # Ruleset documentation
         ├── scripts/             # Scripts for workflows
         │   ├── add-home-banner.py
+        │   ├── apply-rulesets.sh    # Apply branch rulesets to a new repo
         │   ├── check-bibliography-dois.R
         │   ├── create-docx-tracked-changes.py
         │   ├── detect-changed-chapters.py

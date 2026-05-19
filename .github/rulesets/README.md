@@ -35,6 +35,10 @@ the live repo. Or edit in the GitHub UI (Settings → Rules → Rulesets) and
 re-export with:
 
 ```sh
+# Find your ruleset ID:
+gh api repos/OWNER/REPO/rulesets --jq '[.[] | {name, id}]'
+
+# Re-export (replace RULESET_ID with the id from above):
 gh api repos/OWNER/REPO/rulesets/RULESET_ID \
   | jq 'del(.id, .node_id, .source, .source_type, .created_at, .updated_at, ._links, .current_user_can_bypass)' \
   > .github/rulesets/main.json
