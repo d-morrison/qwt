@@ -14,6 +14,8 @@ description: "Use when editing Quarto pages, chapters, slides, handouts, or narr
   chunks where the console output is the main content.
 - Prefer chunk options as YAML-style `#|` directives, not inline
   `r, opt = val` arguments.
+- For a changed `.qmd` with R code, run
+  `Rscript -e 'lintr::lint("path/to/file.qmd")'` before finishing.
 - Do not hard-code computed values in narrative text. Compute them in a chunk
   and reference them with inline R.
 - Treat files under `_extensions/` as vendored third-party code: read them for

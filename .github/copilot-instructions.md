@@ -11,6 +11,8 @@ The source files for the lab manual are available at <https://github.com/UCD-SER
 For workflow fixes, do not restrict the publish workflow render target to HTML only.
 Keep publish rendering all configured formats and fix underlying failures instead.
 
+## Path-Scoped Rules
+
 Path-scoped rules live in [`.github/instructions/`](instructions/) and attach
 automatically (via each file's `applyTo:` glob) when you edit matching files:
 
