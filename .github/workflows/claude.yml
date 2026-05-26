@@ -62,7 +62,11 @@ jobs:
       pull-requests: write  # so Claude can open / edit PRs
       issues: write         # so Claude can comment on issues
       id-token: write
-      actions: read         # so Claude can read CI results on PRs
+      actions: write        # read CI results on PRs AND dispatch
+                            # claude-code-review.yml via `gh workflow run`
+                            # (workflow_dispatch needs actions: write — with
+                            # only `read`, the dispatch 403s and the review
+                            # routing silently fails)
 
     steps:
       # Post a visible acknowledgment BEFORE the multi-minute R/Quarto
@@ -305,9 +309,11 @@ jobs:
           gh workflow run claude-code-review.yml -f pr_number="$PR_NUMBER" \
             || echo "::warning::Could not dispatch claude-code-review.yml; review will not auto-run."
 
-      # When Claude pushed new commits to a PR, re-request review and
-      # dispatch a fresh code review on the new diff.
-      - name: Re-request review and dispatch code review if Claude pushed commits
+      # When Claude pushed new commits to a PR, dispatch a fresh code
+      # review on the new diff. (Unlike rme, this does not re-request a
+      # human reviewer via the requested_reviewers API — qwt has no
+      # standing-reviewer convention; add that here if one is adopted.)
+      - name: Dispatch code review if Claude pushed commits
         if: always() && (github.event.pull_request.number || github.event.issue.pull_request) && steps.head_before.outputs.sha != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -368,10 +374,13 @@ jobs:
               --title "$PR_TITLE" \
               --body "$PR_BODY")
             echo "Opened draft PR: $PR_URL"
-            gh workflow run claude-code-review.yml -f pr_number="${PR_URL##*/}" \
-              || echo "::warning::Could not dispatch claude-code-review.yml."
             PR_VERB="opened draft PR"
           fi
+          # Dispatch a review on the new commits, for both the freshly-opened
+          # and the already-exists (idempotent re-run) paths. The review's
+          # own concurrency group dedupes a redundant dispatch.
+          gh workflow run claude-code-review.yml -f pr_number="${PR_URL##*/}" \
+            || echo "::warning::Could not dispatch claude-code-review.yml."
           gh issue comment "$ISSUE_NUMBER" \
             --body "Pushed Claude's commits to \`${BRANCH}\` and ${PR_VERB}: ${PR_URL}" \
             || echo "::warning::Could not post PR link as issue comment."
