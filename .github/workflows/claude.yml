@@ -276,11 +276,14 @@ jobs:
           fi
 
           # GitHub comment bodies cap at 65,536 bytes; truncate by bytes
-          # (wc -c / head -c, not bash ${#} which counts characters).
+          # (wc -c / head -c, not bash ${#} which counts characters). Pipe
+          # the byte-cut through `iconv -c` to drop a trailing partial
+          # multibyte char, so head -c can't leave invalid UTF-8 that gh
+          # would reject or render as a replacement glyph.
           MAX_LEN=60000
           BYTE_LEN=$(printf '%s' "$RESPONSE" | wc -c)
           if [ "$BYTE_LEN" -gt "$MAX_LEN" ]; then
-            RESPONSE="$(printf '%s' "$RESPONSE" | head -c "$MAX_LEN")
+            RESPONSE="$(printf '%s' "$RESPONSE" | head -c "$MAX_LEN" | iconv -f UTF-8 -t UTF-8 -c)
 
           … (response truncated at ${MAX_LEN} bytes; full text in the [workflow run](${RUN_URL}))"
           fi
