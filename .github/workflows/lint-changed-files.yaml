@@ -33,11 +33,9 @@ jobs:
         run: install.packages(c("lintr", "gh", "purrr", "withr"), repos = "https://packagemanager.posit.co/cran/__linux__/noble/latest")
         shell: Rscript {0}
 
-      - name: Use the repo's lintr config
-        run: |
-          cat('\noptions(lintr.linter_file = ".lintr.R")\n', file = "~/.Rprofile", append = TRUE)
-        shell: Rscript {0}
-
+      # No need to set options(lintr.linter_file): lintr auto-detects `.lintr.R`
+      # (find_config() resolves it with no option set), same as
+      # lint-project.yaml's bare lint_dir().
       - name: Lint files changed by this PR
         run: |
           files <- gh::gh(
@@ -45,7 +43,9 @@ jobs:
             .limit = Inf
           )
           changed_files <- purrr::map_chr(files, "filename")
-          all_files <- list.files(recursive = TRUE)
+          # all.files = TRUE so changed dotfiles (e.g. .lintr.R) appear here and
+          # get excluded too, rather than being linted on every PR.
+          all_files <- list.files(recursive = TRUE, all.files = TRUE)
           # lint_dir() lints everything except the exclusions, so exclude every
           # file that this PR did NOT change.
           exclusions_list <- as.list(setdiff(all_files, changed_files))
