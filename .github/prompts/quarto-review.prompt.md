@@ -29,8 +29,10 @@ Review checklist:
 7. No generated files are edited (`README.md` from `README.Rmd`; `_site/`,
    `_freeze/`, `.quarto/`), and spell/link-check failures are fixed at the
    source (wordlist or content), not suppressed.
-8. The author ran the required local validation: render of the touched page,
-   `lintr`, and `spelling::spell_check_package()`.
+8. The author ran the required local validation:
+   - render of the touched page
+   - `lintr`
+   - `spelling::spell_check_package()`
 
 Output format:
 

@@ -46,12 +46,18 @@ jobs:
       # (e.g. metadata- or workflow-only PRs). Non-PR events always run setup.
       - name: Check if setup should be skipped
         id: check_label
+        # Pass the expression result through env (GitHub-recommended) rather
+        # than interpolating it directly into the shell, to avoid the
+        # expression-injection anti-pattern in code that downstream books copy.
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          LABELS_CONTAIN_SKIP: ${{ contains(github.event.pull_request.labels.*.name, 'skip-cp-setup') }}
         shell: bash
         run: |
-          if [[ '${{ github.event_name }}' != 'pull_request' ]]; then
+          if [[ "$EVENT_NAME" != 'pull_request' ]]; then
             echo "Not a pull request, running full setup"
             echo "skip=false" >> "$GITHUB_OUTPUT"
-          elif [[ '${{ contains(github.event.pull_request.labels.*.name, 'skip-cp-setup') }}' == 'true' ]]; then
+          elif [[ "$LABELS_CONTAIN_SKIP" == 'true' ]]; then
             echo "skip-cp-setup label present, skipping setup steps"
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
