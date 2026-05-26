@@ -10,6 +10,15 @@ on:
       - labeled
       - unlabeled
 
+# Cancel an in-progress preview build when a newer event supersedes it on
+# the same ref — otherwise a fresh push queues behind the stale build and
+# the up-to-date preview is delayed until the obsolete one finishes (see
+# d-morrison/rme#812). `github.ref` is stable across a PR's events, so all
+# of a PR's preview runs share one group.
+concurrency:
+  group: preview-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-deploy:
     if: |
