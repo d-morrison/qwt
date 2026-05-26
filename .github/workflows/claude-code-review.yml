@@ -24,6 +24,17 @@ on:
     #   - "src/**/*.js"
     #   - "src/**/*.jsx"
 
+# Serialize reviews per PR: a newer push cancels the in-progress review
+# of the now-stale diff so only the freshest review runs (and posts a
+# comment). Plain `cancel-in-progress: true` is safe here — unlike the
+# rme review workflow, this one is read-only (its allowedTools below
+# grant no git push / commit), so it never pushes a fix and therefore
+# can't trigger the self-cancellation that rme had to guard against
+# with a conditional expression (see d-morrison/rme#817).
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   claude-review:
     # Skip drafts, Dependabot bumps, and fork PRs. Fork PRs can't read repo
