@@ -1,3 +1,13 @@
+# Claude Code GitHub Action
+#
+# Responds to "@claude" mentions in issues, issue comments, PR review comments,
+# and PR reviews. Requires the CLAUDE_CODE_OAUTH_TOKEN repository secret (set
+# up by `/install-github-app` from Claude Code, or manually in repo settings).
+#
+# Project guidance for Claude lives in CLAUDE.md at the repo root.
+#
+# Upstream template: https://github.com/anthropics/claude-code-action
+
 name: Claude Code
 
 on:
@@ -6,45 +16,94 @@ on:
   pull_request_review_comment:
     types: [created]
   issues:
-    types: [opened, assigned]
+    # `assigned` is intentionally NOT triggered: the actor-gate below checks
+    # `github.event.issue.author_association`, which describes the issue
+    # *author* — not the assigner. A collaborator assigning themselves to an
+    # outsider's issue would fail the gate. If you need a collaborator to
+    # invoke @claude on an outsider's issue, leave a comment instead.
+    types: [opened]
   pull_request_review:
     types: [submitted]
 
 jobs:
   claude:
+    # Only trigger for trusted authors (OWNER / MEMBER / COLLABORATOR).
+    # Without this, anyone who can comment on a public issue or PR could
+    # trigger an LLM run with write-scoped GITHUB_TOKEN permissions.
     if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
-      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude') && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude') && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude') && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association)) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')) && contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association))
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      pull-requests: read
-      issues: read
+      contents: write       # so Claude can push a branch
+      pull-requests: write  # so Claude can open / edit PRs
+      issues: write         # so Claude can comment on issues
       id-token: write
-      actions: read # Required for Claude to read CI results on PRs
+      actions: read         # so Claude can read CI results on PRs
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          submodules: recursive
 
       - name: Run Claude Code
         id: claude
         uses: anthropics/claude-code-action@v1
+        # Export GH_TOKEN so the `gh` CLI commands granted in claude_args
+        # below (`gh pr create`, `gh pr edit`, `gh pr view`, etc.)
+        # authenticate non-interactively. Without it, `gh` falls back to
+        # an interactive auth prompt and fails in CI, blocking the
+        # branch/PR creation this workflow is meant to enable. The token
+        # is the job's write-scoped GITHUB_TOKEN (see permissions: above);
+        # matches how the repo's other gh-using workflows authenticate.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
-          # This is an optional setting that allows Claude to read CI results on PRs
-          additional_permissions: |
-            actions: read
+          # Note: `actions: read` for CI-result inspection is granted at the
+          # job-level `permissions:` block above; we don't need to repeat it
+          # via the action's `additional_permissions` input.
 
           # Optional: Give a custom prompt to Claude. If this is not specified, Claude will perform the instructions specified in the comment that tagged it.
           # prompt: 'Update the pull request description to include a summary of changes.'
 
-          # Optional: Add claude_args to customize behavior and configuration
+          # Allow the git/gh commands Claude needs to push a branch and open a
+          # PR, plus the helpers most useful on this Quarto/R repo. `git push`
+          # is narrowed to `origin` and destructive flag variants are
+          # disallowed so a write-scoped GITHUB_TOKEN can't be used to rewrite
+          # or remove refs. The `+ref` force-update refspec is also denied;
+          # the `:ref` delete-refspec form can't be expressed in Claude Code's
+          # pattern syntax (a trailing `:*` is an alias for trailing ` *` —
+          # see https://code.claude.com/docs/en/permissions#wildcard-patterns)
+          # so destructive deletes are caught instead by GitHub branch
+          # protection on the default branch.
+          #
+          # `Rscript -e` is restricted to specific safe namespaces — a bare
+          # `Rscript -e *` would let Claude shell out via `system()` and
+          # bypass the git-push deny list. Extend this list if a workflow
+          # legitimately needs another helper (e.g. `roxygen2::*`).
+          #
+          # `quarto render`/`check` ARE allowed so @claude can confirm the
+          # site still builds before pushing edits to source files —
+          # otherwise a broken render would only surface as a red check on
+          # the PR it opens, after the session has ended and with no chance
+          # to self-correct.
+          #
+          # Note this means the git-push deny list below is not an airtight
+          # seal: `quarto render`, like the already-allowed `devtools::check*`
+          # and `pkgdown::build*`, evaluates project R code that can
+          # `system()` out to arbitrary commands. That's an accepted trade —
+          # the real containment is the trusted-author gate in the job `if:`
+          # above (only OWNER/MEMBER/COLLABORATOR can trigger this run), and
+          # the deny list still blocks Claude's *direct* destructive git
+          # invocations. For airtight isolation you'd render in a separate
+          # read-only job; we prefer in-session render verification here.
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
-          # or https://code.claude.com/docs/en/cli-reference for available options
-          # claude_args: '--allowed-tools Bash(gh pr *)'
+          # or https://code.claude.com/docs/en/cli-reference for available options.
+          claude_args: |
+            --allowedTools "Bash(Rscript -e 'lintr::lint*'),Bash(Rscript -e 'devtools::check*'),Bash(Rscript -e 'devtools::document*'),Bash(Rscript -e 'pkgdown::build*'),Bash(quarto render:*),Bash(quarto check:*),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git add:*),Bash(git commit:*),Bash(git push origin:*),Bash(git push -u origin:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr create:*),Bash(gh pr edit:*),Bash(gh issue view:*)" --disallowedTools "Bash(git push --force:*),Bash(git push -f:*),Bash(git push --delete:*),Bash(git push -d:*),Bash(git push --mirror:*),Bash(git push --tags:*),Bash(git push --all:*),Bash(git push origin +*),Bash(git push -u origin +*)"
 
