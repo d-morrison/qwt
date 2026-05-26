@@ -127,7 +127,7 @@ jobs:
         if: steps.check_label.outputs.skip != 'true'
         run: |
           install.packages(
-            c("lintr", "rmarkdown"),
+            c("lintr", "rmarkdown", "DT"),
             repos = "https://packagemanager.posit.co/cran/__linux__/noble/latest"
           )
         shell: Rscript {0}
