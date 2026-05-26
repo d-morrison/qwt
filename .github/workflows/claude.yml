@@ -52,6 +52,15 @@ jobs:
       - name: Run Claude Code
         id: claude
         uses: anthropics/claude-code-action@v1
+        # Export GH_TOKEN so the `gh` CLI commands granted in claude_args
+        # below (`gh pr create`, `gh pr edit`, `gh pr view`, etc.)
+        # authenticate non-interactively. Without it, `gh` falls back to
+        # an interactive auth prompt and fails in CI, blocking the
+        # branch/PR creation this workflow is meant to enable. The token
+        # is the job's write-scoped GITHUB_TOKEN (see permissions: above);
+        # matches how the repo's other gh-using workflows authenticate.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
