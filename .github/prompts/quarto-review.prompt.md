@@ -43,4 +43,4 @@ Output format:
 
 Base the review on [copilot-instructions.md](../copilot-instructions.md) and
 [CLAUDE.md](../../CLAUDE.md), plus any path-scoped rules under
-`.github/instructions/` that apply to the changed files.
+`.github/instructions/` (if present) that apply to the changed files.

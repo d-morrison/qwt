@@ -11,12 +11,18 @@
 
 name: "Copilot Setup Steps"
 
-# Automatically run the setup steps when they are changed to allow for easy validation,
-# and allow manual testing through the repository's "Actions" tab.
+# This workflow has two independent invocation paths:
 #
-# Adding the `skip-cp-setup` label to a PR short-circuits the heavy install
-# (checkout only), so metadata- or workflow-only PRs don't pay the full setup
-# cost. The `labeled`/`unlabeled` triggers let toggling the label re-run.
+#  1. Copilot agent provisioning: GitHub's Copilot coding agent runs the
+#     `copilot-setup-steps` job DIRECTLY to build its environment when it
+#     starts a task. That invocation is NOT governed by the `on:` triggers
+#     below — so the `paths:` filter does not affect it. The `skip-cp-setup`
+#     label short-circuits the heavy install (checkout only) in that context,
+#     so a PR Copilot is working on can opt out of the full setup cost.
+#  2. Validation CI: the `on:` triggers below run the workflow as an ordinary
+#     job, gated to changes of THIS file so we can validate edits to it
+#     without paying the setup cost on every unrelated PR. The
+#     `labeled`/`unlabeled` types let toggling the label re-run a validation.
 on:
   workflow_dispatch:
   push:
