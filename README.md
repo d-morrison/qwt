@@ -126,9 +126,19 @@ branch.
     git push origin main
     ```
 
-3.  **Wait for the workflow** to complete (check the Actions tab)
+3.  **Apply branch rulesets** (requires admin access):
 
-4.  **Access your website** at:
+    ``` bash
+    .github/scripts/apply-rulesets.sh
+    ```
+
+    This protects `main` against direct pushes / force-pushes /
+    deletion and requires a PR to merge. See
+    `.github/rulesets/README.md` for details.
+
+4.  **Wait for the workflow** to complete (check the Actions tab)
+
+5.  **Access your website** at:
     `https://YOUR-USERNAME.github.io/YOUR-REPO/`
 
 ## GitHub Actions Workflows
@@ -235,8 +245,12 @@ ensures all citations are properly traceable.
     ├── README.md               # This file
     ├── macros/                 # Git submodule: d-morrison/macros
     └── .github/
+        ├── rulesets/            # Branch ruleset definitions
+        │   ├── main.json        # Default branch ruleset
+        │   └── README.md        # Ruleset documentation
         ├── scripts/             # Scripts for workflows
         │   ├── add-home-banner.py
+        │   ├── apply-rulesets.sh    # Apply branch rulesets to a new repo
         │   ├── check-bibliography-dois.R
         │   ├── create-docx-tracked-changes.py
         │   ├── detect-changed-chapters.py
