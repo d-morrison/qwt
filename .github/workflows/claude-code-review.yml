@@ -23,6 +23,15 @@ on:
     #   - "src/**/*.tsx"
     #   - "src/**/*.js"
     #   - "src/**/*.jsx"
+  # Allow claude.yml to dispatch a fresh review (e.g. after an @claude run
+  # pushes commits, or on an `@claude review` comment). GITHUB_TOKEN pushes
+  # don't fire `synchronize`, so an explicit dispatch path is needed.
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull request number to review'
+        required: true
+        type: number
 
 # Serialize reviews per PR: a newer push cancels the in-progress review
 # of the now-stale diff so only the freshest review runs (and posts a
@@ -30,21 +39,29 @@ on:
 # rme review workflow, this one is read-only (its allowedTools below
 # grant no git push / commit), so it never pushes a fix and therefore
 # can't trigger the self-cancellation that rme had to guard against
-# with a conditional expression (see d-morrison/rme#817).
+# with a conditional expression (see d-morrison/rme#817). The
+# `|| inputs.pr_number` keeps a workflow_dispatch review in the same
+# group as the PR's pull_request reviews so they dedupe.
 concurrency:
-  group: claude-review-${{ github.event.pull_request.number }}
+  group: claude-review-${{ github.event.pull_request.number || inputs.pr_number }}
   cancel-in-progress: true
 
 jobs:
   claude-review:
-    # Skip drafts, Dependabot bumps, and fork PRs. Fork PRs can't read repo
-    # secrets, so `CLAUDE_CODE_OAUTH_TOKEN` would be empty and the run would
-    # fail with a noisy red check — bail early instead.
+    # workflow_dispatch is fired by claude.yml for a specific PR, so always
+    # run it. Otherwise skip drafts, Dependabot bumps, and fork PRs (fork
+    # PRs can't read repo secrets, so CLAUDE_CODE_OAUTH_TOKEN would be empty
+    # and the run would fail with a noisy red check).
     if: |
-      github.event.pull_request.draft == false &&
-      github.event.pull_request.user.login != 'dependabot[bot]' &&
-      github.event.pull_request.head.repo.full_name == github.repository
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.draft == false &&
+       github.event.pull_request.user.login != 'dependabot[bot]' &&
+       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
+    env:
+      # Resolve the PR number once: from the pull_request event, or the
+      # workflow_dispatch input when claude.yml triggered us.
+      PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr_number }}
     permissions:
       contents: read
       pull-requests: write  # post review + inline comments
@@ -71,9 +88,14 @@ jobs:
           # upstream code-review skill; pin to a tag if reviews ever start
           # changing in surprising ways.
           plugins: 'code-review@claude-code-plugins'
-          track_progress: 'true'
+          # track_progress forces tag mode (guaranteed tracking comment),
+          # but the action rejects it for workflow_dispatch events
+          # ("track_progress is only supported for events: pull_request,
+          # issues, ..."). Gate on event_name: tag mode for pull_request,
+          # agent mode for dispatched runs. (See d-morrison/rme#818.)
+          track_progress: ${{ github.event_name == 'pull_request' && 'true' || 'false' }}
           prompt: |
-            /code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+            /code-review:code-review ${{ github.repository }}/pull/${{ env.PR_NUMBER }}
 
             In addition to the standard checks above, this is the qwt Quarto
             website template — small, prose-heavy, and re-used as a template
