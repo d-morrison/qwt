@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Apply branch rulesets from .github/rulesets/*.json to the current repo.
-# Run once after creating a new repo from this template. Idempotent: a
+# Run after creating a new repo from this template, or after editing a
+# ruleset definition. Idempotent: a
 # ruleset whose `name` already exists on the repo is updated in place rather
 # than duplicated.
 #
