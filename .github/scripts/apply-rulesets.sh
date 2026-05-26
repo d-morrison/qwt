@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # Apply branch rulesets from .github/rulesets/*.json to the current repo.
 # Run after creating a new repo from this template, or after editing a
-# ruleset definition. Idempotent: a
-# ruleset whose `name` already exists on the repo is updated in place rather
-# than duplicated.
+# ruleset definition. Idempotent: a ruleset whose `name` already exists on
+# the repo is updated in place rather than duplicated.
 #
 # Requires: gh CLI authenticated with admin access to the repo.
 # Usage:    .github/scripts/apply-rulesets.sh [owner/repo]
