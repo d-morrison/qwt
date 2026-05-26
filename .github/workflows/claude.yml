@@ -87,12 +87,22 @@ jobs:
           # bypass the git-push deny list. Extend this list if a workflow
           # legitimately needs another helper (e.g. `roxygen2::*`).
           #
-          # `quarto render` and `quarto check` are intentionally NOT in the
-          # allowed list: rendering this site evaluates R code chunks, which
-          # can call `system()` and re-open the bypass we close above. If a
-          # `@claude` task needs a build, run it in a separate non-write job.
+          # `quarto render`/`check` are intentionally NOT allowed: rendering
+          # this site evaluates R code chunks, which can call `system()` and
+          # re-open the bypass we close above. They're also explicitly DENIED
+          # below — not just omitted — because the committed
+          # `.claude/settings.json` allows quarto for local dev, and this
+          # action loads project settings (settingSources includes
+          # "project"), so an allow there would otherwise reach this
+          # write-scoped run; a deny rule overrides that allow.
+          #
+          # Caveat: this is defense-in-depth, not an airtight seal — the
+          # allowed `devtools::check*` / `pkgdown::build*` likewise execute
+          # project R code and can `system()`. The real containment is the
+          # trusted-author gate in the job `if:` above. For airtight
+          # isolation, move any build/render to a separate read-only job.
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options.
           claude_args: |
-            --allowedTools "Bash(Rscript -e 'lintr::lint*'),Bash(Rscript -e 'devtools::check*'),Bash(Rscript -e 'devtools::document*'),Bash(Rscript -e 'pkgdown::build*'),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git add:*),Bash(git commit:*),Bash(git push origin:*),Bash(git push -u origin:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr create:*),Bash(gh pr edit:*),Bash(gh issue view:*)" --disallowedTools "Bash(git push --force:*),Bash(git push -f:*),Bash(git push --delete:*),Bash(git push -d:*),Bash(git push --mirror:*),Bash(git push --tags:*),Bash(git push --all:*),Bash(git push origin +*),Bash(git push -u origin +*)"
+            --allowedTools "Bash(Rscript -e 'lintr::lint*'),Bash(Rscript -e 'devtools::check*'),Bash(Rscript -e 'devtools::document*'),Bash(Rscript -e 'pkgdown::build*'),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git add:*),Bash(git commit:*),Bash(git push origin:*),Bash(git push -u origin:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr create:*),Bash(gh pr edit:*),Bash(gh issue view:*)" --disallowedTools "Bash(git push --force:*),Bash(git push -f:*),Bash(git push --delete:*),Bash(git push -d:*),Bash(git push --mirror:*),Bash(git push --tags:*),Bash(git push --all:*),Bash(git push origin +*),Bash(git push -u origin +*),Bash(quarto:*),Bash(R CMD check:*)"
 
