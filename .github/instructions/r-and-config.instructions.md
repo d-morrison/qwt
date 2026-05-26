@@ -9,14 +9,13 @@ description: "Use when editing R source, Quarto configuration, or GitHub workflo
   [DESCRIPTION](../../DESCRIPTION), [_quarto.yml](../../_quarto.yml), and the
   relevant workflow file before changing package, render, or CI behavior.
 - Respect [.lintr.R](../../.lintr.R). For changed `.R` files run
-  `Rscript -e 'lintr::lint("path/to/file.R")'`; for changed `.qmd` files with R
-  code, lint the `.qmd` file itself. Before finishing, confirm
+  `Rscript -e 'lintr::lint("path/to/file.R")'`, then confirm
   `Rscript -e 'lintr::lint_dir()'` still passes (this is what CI runs).
-- If your change affects rendering, render only the touched page in HTML
-  (`quarto render <file>.qmd --to html`), not the full site.
+- If a render-affecting config change touches a page, render only that page in
+  HTML (`quarto render <file>.qmd --to html`), not the full site.
 - Run `Rscript -e 'spelling::spell_check_package()'` before finishing changes to
-  `.R`, `.qmd`, or config files. Fix only errors you introduced, and add
-  legitimate technical terms to `inst/WORDLIST` rather than disabling the check.
+  `.R` or config files. Fix only errors you introduced, and add legitimate
+  technical terms to `inst/WORDLIST` rather than disabling the check.
 - This is a template: every dependency added here lands in every downstream
   book, so do not add a new R package or Quarto extension without a clear
   reason. Align workflow and render changes with the existing CI patterns
