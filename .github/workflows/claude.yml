@@ -52,6 +52,15 @@ jobs:
       - name: Run Claude Code
         id: claude
         uses: anthropics/claude-code-action@v1
+        # Export GH_TOKEN so the `gh` CLI commands granted in claude_args
+        # below (`gh pr create`, `gh pr edit`, `gh pr view`, etc.)
+        # authenticate non-interactively. Without it, `gh` falls back to
+        # an interactive auth prompt and fails in CI, blocking the
+        # branch/PR creation this workflow is meant to enable. The token
+        # is the job's write-scoped GITHUB_TOKEN (see permissions: above);
+        # matches how the repo's other gh-using workflows authenticate.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
@@ -78,12 +87,23 @@ jobs:
           # bypass the git-push deny list. Extend this list if a workflow
           # legitimately needs another helper (e.g. `roxygen2::*`).
           #
-          # `quarto render` and `quarto check` are intentionally NOT in the
-          # allowed list: rendering this site evaluates R code chunks, which
-          # can call `system()` and re-open the bypass we close above. If a
-          # `@claude` task needs a build, run it in a separate non-write job.
+          # `quarto render`/`check` ARE allowed so @claude can confirm the
+          # site still builds before pushing edits to source files —
+          # otherwise a broken render would only surface as a red check on
+          # the PR it opens, after the session has ended and with no chance
+          # to self-correct.
+          #
+          # Note this means the git-push deny list below is not an airtight
+          # seal: `quarto render`, like the already-allowed `devtools::check*`
+          # and `pkgdown::build*`, evaluates project R code that can
+          # `system()` out to arbitrary commands. That's an accepted trade —
+          # the real containment is the trusted-author gate in the job `if:`
+          # above (only OWNER/MEMBER/COLLABORATOR can trigger this run), and
+          # the deny list still blocks Claude's *direct* destructive git
+          # invocations. For airtight isolation you'd render in a separate
+          # read-only job; we prefer in-session render verification here.
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options.
           claude_args: |
-            --allowedTools "Bash(Rscript -e 'lintr::lint*'),Bash(Rscript -e 'devtools::check*'),Bash(Rscript -e 'devtools::document*'),Bash(Rscript -e 'pkgdown::build*'),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git add:*),Bash(git commit:*),Bash(git push origin:*),Bash(git push -u origin:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr create:*),Bash(gh pr edit:*),Bash(gh issue view:*)" --disallowedTools "Bash(git push --force:*),Bash(git push -f:*),Bash(git push --delete:*),Bash(git push -d:*),Bash(git push --mirror:*),Bash(git push --tags:*),Bash(git push --all:*),Bash(git push origin +*),Bash(git push -u origin +*)"
+            --allowedTools "Bash(Rscript -e 'lintr::lint*'),Bash(Rscript -e 'devtools::check*'),Bash(Rscript -e 'devtools::document*'),Bash(Rscript -e 'pkgdown::build*'),Bash(quarto render:*),Bash(quarto check:*),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git add:*),Bash(git commit:*),Bash(git push origin:*),Bash(git push -u origin:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr create:*),Bash(gh pr edit:*),Bash(gh issue view:*)" --disallowedTools "Bash(git push --force:*),Bash(git push -f:*),Bash(git push --delete:*),Bash(git push -d:*),Bash(git push --mirror:*),Bash(git push --tags:*),Bash(git push --all:*),Bash(git push origin +*),Bash(git push -u origin +*)"
 
