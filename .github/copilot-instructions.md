@@ -11,6 +11,12 @@ The source files for the lab manual are available at <https://github.com/UCD-SER
 For workflow fixes, do not restrict the publish workflow render target to HTML only.
 Keep publish rendering all configured formats and fix underlying failures instead.
 
+Path-scoped rules live in [`.github/instructions/`](instructions/) and attach
+automatically (via each file's `applyTo:` glob) when you edit matching files:
+
+- [`quarto-content.instructions.md`](instructions/quarto-content.instructions.md) — `.qmd` / `.Rmd` content
+- [`r-and-config.instructions.md`](instructions/r-and-config.instructions.md) — `.R`, `.yml`, `.yaml`
+
 ## Style Guidelines
 
 ### Lists
