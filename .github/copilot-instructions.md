@@ -77,3 +77,19 @@ ggplot(mtcars, aes(x = wt, y = mpg)) +
   labs(x = "Weight (1000 lbs)", y = "Miles per Gallon")
 ```
 ````
+
+## Quality Assurance
+
+### Testing Renders
+
+Before requesting review or marking work as complete:
+
+- **Test your changes locally** by running `quarto render` (or rendering only the touched page with `quarto render <file>.qmd --to html` while iterating).
+- **Check the rendered output** in `_site/` to verify:
+  - All content displays correctly
+  - No broken links or missing images
+  - Formatting is as expected
+- **Review the PR preview** at the preview URL to confirm everything works in the deployed version.
+- **Fix any rendering issues** before requesting review.
+
+This ensures reviewers see working, polished output rather than discovering basic rendering problems.
