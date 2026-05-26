@@ -49,9 +49,12 @@ concurrency:
 jobs:
   claude-review:
     # workflow_dispatch is fired by claude.yml for a specific PR, so always
-    # run it. Otherwise skip drafts, Dependabot bumps, and fork PRs (fork
-    # PRs can't read repo secrets, so CLAUDE_CODE_OAUTH_TOKEN would be empty
-    # and the run would fail with a noisy red check).
+    # run it — this intentionally bypasses the draft guard below so a review
+    # fires on the draft PR claude.yml opens for an issue trigger (we want to
+    # review Claude's draft work early). Otherwise skip drafts, Dependabot
+    # bumps, and fork PRs (fork PRs can't read repo secrets, so
+    # CLAUDE_CODE_OAUTH_TOKEN would be empty and the run would fail with a
+    # noisy red check).
     if: |
       github.event_name == 'workflow_dispatch' ||
       (github.event.pull_request.draft == false &&

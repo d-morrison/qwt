@@ -168,8 +168,8 @@ jobs:
               and do NOT run `gh pr create` — a post-step pushes this branch
               and opens a draft PR linking back to the issue.
             - **PR triggers**: commit your changes; they belong on the PR's
-              branch. A post-step re-requests review and dispatches a code
-              review when the head SHA moves.
+              branch. A post-step dispatches a code review when the head SHA
+              moves.
 
             If your reply is **prose** (answering a question, a
             recommendation, a review) rather than a code change, write your
@@ -288,7 +288,7 @@ jobs:
           … (response truncated at ${MAX_LEN} bytes; full text in the [workflow run](${RUN_URL}))"
           fi
 
-          gh issue comment "$ENTITY_NUMBER" --body "$(printf '%s\n\n<sub>— posted by @claude post-step from [workflow run](%s)</sub>\n' "$RESPONSE" "$RUN_URL")" \
+          gh issue comment "$ENTITY_NUMBER" --repo "${{ github.repository }}" --body "$(printf '%s\n\n<sub>— posted by @claude post-step from [workflow run](%s)</sub>\n' "$RESPONSE" "$RUN_URL")" \
             || echo "::warning::Could not post Claude's response back to the source thread."
 
       # Route an explicit `@claude review` request to the dedicated reviewer
@@ -363,6 +363,10 @@ jobs:
             PR_URL="$EXISTING"
             PR_VERB="pushed new commits to existing draft PR"
           else
+            # "Addresses #N" (not "Closes/Fixes #N") is deliberate: this is a
+            # draft of Claude's attempt and may not fully resolve the issue,
+            # so we don't want merging it to auto-close the issue. A human can
+            # switch to "Closes" on the PR if the work is in fact complete.
             PR_BODY=$(printf 'Draft PR opened by `@claude` to address #%s.\n\nTriggered by [workflow run](%s).\n\nAddresses #%s.\n' \
               "$ISSUE_NUMBER" "$RUN_URL" "$ISSUE_NUMBER")
             if [ -z "$ISSUE_TITLE" ]; then
@@ -384,6 +388,6 @@ jobs:
           # own concurrency group dedupes a redundant dispatch.
           gh workflow run claude-code-review.yml -f pr_number="${PR_URL##*/}" \
             || echo "::warning::Could not dispatch claude-code-review.yml."
-          gh issue comment "$ISSUE_NUMBER" \
+          gh issue comment "$ISSUE_NUMBER" --repo "${{ github.repository }}" \
             --body "Pushed Claude's commits to \`${BRANCH}\` and ${PR_VERB}: ${PR_URL}" \
             || echo "::warning::Could not post PR link as issue comment."
