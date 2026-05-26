@@ -16,7 +16,12 @@ on:
   pull_request_review_comment:
     types: [created]
   issues:
-    types: [opened, assigned]
+    # `assigned` is intentionally NOT triggered: the actor-gate below checks
+    # `github.event.issue.author_association`, which describes the issue
+    # *author* — not the assigner. A collaborator assigning themselves to an
+    # outsider's issue would fail the gate. If you need a collaborator to
+    # invoke @claude on an outsider's issue, leave a comment instead.
+    types: [opened]
   pull_request_review:
     types: [submitted]
 
