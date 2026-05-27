@@ -494,6 +494,37 @@ jobs:
           gh workflow run claude-code-review.yml -f pr_number="$PR_NUMBER" \
             || echo "::warning::Could not dispatch claude-code-review.yml; review will not auto-run."
 
+      # If an `@claude review` arrived as a LATE comment (posted after the
+      # trigger and absorbed by this session's polling), the dedup marks it so
+      # its OWN run skips — losing the review dispatch that run would have
+      # done. Re-scan for late `@claude review` requests and dispatch here.
+      # The review workflow's per-PR concurrency dedupes any redundant
+      # dispatch, so this is safe even when the trigger comment was itself a
+      # review request (that case is handled by the step above; TRIGGER_TS is
+      # strict-greater, so the trigger comment isn't double-counted here). #90
+      - name: Dispatch review for a late @claude review comment
+        if: |
+          always() &&
+          steps.dedup.outputs.skip != 'true' &&
+          (github.event.pull_request.number || github.event.issue.pull_request)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.issue.number }}
+          TRIGGER_TS: ${{ github.event.comment.created_at || github.event.review.submitted_at || github.event.issue.created_at }}
+        run: |
+          late=$(
+            { gh api "repos/$REPO/issues/$PR_NUMBER/comments" --paginate --jq '.[]' 2>/dev/null
+              gh api "repos/$REPO/pulls/$PR_NUMBER/comments"  --paginate --jq '.[]' 2>/dev/null
+            } | jq -s --arg ts "$TRIGGER_TS"                   '[.[] | select((.created_at > $ts) and (.body | test("@claude review")) and (.user.type != "Bot"))] | length' )
+          if [ "${late:-0}" -gt 0 ]; then
+            echo "Found $late late @claude review request(s) newer than $TRIGGER_TS; dispatching review."
+            gh workflow run claude-code-review.yml -f pr_number="$PR_NUMBER" \
+              || echo "::warning::Could not dispatch claude-code-review.yml for the late review request."
+          else
+            echo "No late @claude review requests."
+          fi
+
       # When Claude pushed new commits to a PR, dispatch a fresh code
       # review on the new diff. (Unlike rme, this does not re-request a
       # human reviewer via the requested_reviewers API — qwt has no
