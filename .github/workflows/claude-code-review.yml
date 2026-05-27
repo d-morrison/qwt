@@ -128,8 +128,12 @@ jobs:
                - Spell-check / link-check failures are fixed at the source
                  (wordlist or content) rather than suppressed.
 
-            Use inline comments for line-specific feedback. Skip generic
-            praise — be concrete. If the PR looks clean, say so briefly.
+            **Post line-specific findings as inline review comments** anchored
+            to the relevant line(s) — use the inline-comment tool, not a prose
+            list in the summary. Reserve the top-level summary comment for a
+            brief overall verdict plus any finding not tied to a specific line;
+            don't restate each inline comment there. Skip generic praise — be
+            concrete. If the PR looks clean, say so briefly.
 
           # `gh pr comment` is narrowed to `create` so the reviewer can post
           # a top-level summary but can't edit or delete prior review

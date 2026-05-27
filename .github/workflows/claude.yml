@@ -180,7 +180,11 @@ jobs:
             If your reply is **prose** (answering a question, a
             recommendation, a review) rather than a code change, write your
             final message as the reply you want posted on the thread — a
-            post-step posts it as a comment when you didn't commit code.
+            post-step posts it as a comment when you didn't commit code. When
+            the trigger was an inline review comment on the diff (a
+            `pull_request_review_comment`), that reply is posted as a threaded
+            reply to that exact comment — keep it focused on the line(s) that
+            comment is about.
 
             For an explicit `@claude review` request, do NOT post your own
             review; a post-step dispatches the dedicated code-review
@@ -362,7 +366,20 @@ jobs:
           … (response truncated at ${MAX_LEN} bytes; full text in the [workflow run](${RUN_URL}))"
           fi
 
-          gh issue comment "$ENTITY_NUMBER" --repo "${{ github.repository }}" --body "$(printf '%s\n\n<sub>— posted by @claude post-step from [workflow run](%s)</sub>\n' "$RESPONSE" "$RUN_URL")" \
+          BODY="$(printf '%s\n\n<sub>— posted by @claude post-step from [workflow run](%s)</sub>\n' "$RESPONSE" "$RUN_URL")"
+          # When the trigger was an inline review comment, reply IN-THREAD to
+          # that comment (pulls/.../comments/<id>/replies) so the conversation
+          # stays anchored to the diff line instead of a detached top-level
+          # comment. Fall back to a top-level comment if the reply API fails
+          # (e.g. the parent review comment was deleted).
+          if [ "${{ github.event_name }}" = "pull_request_review_comment" ]; then
+            if jq -n --arg b "$BODY" '{body: $b}' \
+                 | gh api --method POST "repos/${{ github.repository }}/pulls/$ENTITY_NUMBER/comments/${{ github.event.comment.id }}/replies" --input - >/dev/null; then
+              exit 0
+            fi
+            echo "::warning::In-thread reply failed; falling back to a top-level comment."
+          fi
+          gh issue comment "$ENTITY_NUMBER" --repo "${{ github.repository }}" --body "$BODY" \
             || echo "::warning::Could not post Claude's response back to the source thread."
 
       # Route an explicit `@claude review` request to the dedicated reviewer
