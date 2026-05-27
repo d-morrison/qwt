@@ -374,12 +374,6 @@ jobs:
           SHA=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER" --jq '.head.sha')
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
 
-      # Surface Claude's final prose reply when it didn't commit code.
-      # Agent mode discards the response otherwise. Skipped on `@claude
-      # review` (with PR context) because the dispatch step below routes
-      # that to the dedicated reviewer — posting here too would double up.
-      # The PR-context guard keeps `@claude review` on a plain issue from
-      # falling into the skip (no PR to dispatch a review for).
       # Mark the comments Claude absorbed via polling with a 🚀 reaction so
       # the duplicate run each of them queued skips itself (the dedup pre-step
       # looks for this reaction). Claude emits the absorbed ids in a
@@ -419,6 +413,12 @@ jobs:
             fi
           done
 
+      # Surface Claude's final prose reply when it didn't commit code.
+      # Agent mode discards the response otherwise. Skipped on `@claude
+      # review` (with PR context) because the dispatch step below routes
+      # that to the dedicated reviewer — posting here too would double up.
+      # The PR-context guard keeps `@claude review` on a plain issue from
+      # falling into the skip (no PR to dispatch a review for).
       - name: Post Claude's response if no code was committed
         if: |
           always() &&
