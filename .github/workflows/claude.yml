@@ -516,7 +516,9 @@ jobs:
           late=$(
             { gh api "repos/$REPO/issues/$PR_NUMBER/comments" --paginate --jq '.[]' 2>/dev/null
               gh api "repos/$REPO/pulls/$PR_NUMBER/comments"  --paginate --jq '.[]' 2>/dev/null
-            } | jq -s --arg ts "$TRIGGER_TS"                   '[.[] | select((.created_at > $ts) and (.body | test("@claude review")) and (.user.type != "Bot"))] | length' )
+              gh api "repos/$REPO/pulls/$PR_NUMBER/reviews"   --paginate --jq '.[]' 2>/dev/null
+            } | jq -s --arg ts "$TRIGGER_TS" \
+                  '[.[] | select((((.created_at // .submitted_at) // "") > $ts) and ((.body // "") | test("@claude review")) and ((.user.type // "") != "Bot"))] | length' )
           if [ "${late:-0}" -gt 0 ]; then
             echo "Found $late late @claude review request(s) newer than $TRIGGER_TS; dispatching review."
             gh workflow run claude-code-review.yml -f pr_number="$PR_NUMBER" \
