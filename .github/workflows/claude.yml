@@ -14,13 +14,14 @@
 #     replies (questions/reviews) that agent mode would otherwise discard.
 #   - "Dispatch claude-code-review.yml on @claude review" routes review
 #     requests to the dedicated reviewer instead of self-reviewing.
+# Ported from d-morrison/rme (#788/#794/#805); adapted to qwt's lighter
+# setup (DESCRIPTION-based deps, no renv; no submodule-token URL rewrite).
+#
 # The `prompt:` also has Claude poll for late-arriving @claude comments
 # (issue/PR comment + PR review endpoints) before declaring done, so a
 # follow-up posted mid-run is handled in-session rather than dropped
 # (issue #73). The concurrency block serializes runs, but a queued run can
 # still re-handle a comment the active run already absorbed.
-# Ported from d-morrison/rme (#788/#794/#805); adapted to qwt's lighter
-# setup (DESCRIPTION-based deps, no renv; no submodule-token URL rewrite).
 #
 # Project guidance for Claude lives in CLAUDE.md at the repo root.
 
@@ -206,7 +207,7 @@ jobs:
 
             1. Fetch the endpoint(s) that apply to your trigger type. The
                URLs are NOT quoted — the allowed-tools pattern
-               `Bash(gh api repos/<repo>/*)` only matches the unquoted form,
+               `Bash(gh api repos/<repo>/:*)` only matches the unquoted form,
                and a leading quote (`gh api 'repos/...`) makes the call get
                denied:
                ```
@@ -244,15 +245,25 @@ jobs:
           # project R code that can `system()`; the real containment is the
           # trusted-author gate in the job `if:` above.
           #
-          # `Bash(gh api repos/${{ github.repository }}/*)` backs the
+          # `Bash(gh api repos/${{ github.repository }}/:*)` backs the
           # late-comment polling step in the prompt above (fetching
           # `/issues/N/comments`, `/pulls/N/comments`, `/pulls/N/reviews`).
-          # It's scoped to THIS repo's API surface — excludes cross-repo /
-          # cross-org calls the session doesn't need. It does match write
-          # endpoints (`gh api -X POST ...`) since allowed-tools can't filter
-          # by HTTP method, but the real bound is the GITHUB_TOKEN scopes.
+          # The `:*` (qwt's house prefix-wildcard, not a bare `/*` glob)
+          # matches `gh api repos/<this-repo>/` followed by any path — so it
+          # doesn't depend on whether `*` crosses `/`, and it's scoped to
+          # THIS repo's API surface (excludes cross-repo / cross-org calls).
+          #
+          # Because the prefix is anchored at `gh api repos/`, the flag-first
+          # write form (`gh api -X POST repos/...`) does NOT match this allow
+          # rule and is denied. The two `gh api -X` / `--method` entries in
+          # disallowedTools below also deny that form explicitly. What this
+          # still can't pattern-block is a URL-first write that appends a
+          # method/field flag AFTER the URL (`gh api repos/<repo>/... -X
+          # POST`), since allowed-tools can't filter by HTTP method or by
+          # flags past the prefix — there, the real bound is the
+          # GITHUB_TOKEN scopes plus the trusted-author gate in the job `if:`.
           claude_args: |
-            --allowedTools "Bash(Rscript -e 'lintr::lint*'),Bash(Rscript -e 'devtools::check*'),Bash(Rscript -e 'devtools::document*'),Bash(Rscript -e 'pkgdown::build*'),Bash(quarto render:*),Bash(quarto check:*),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git show:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git add:*),Bash(git commit:*),Bash(git push origin:*),Bash(git push -u origin:*),Bash(gh api repos/${{ github.repository }}/*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr create:*),Bash(gh pr edit:*),Bash(gh issue view:*)" --disallowedTools "Bash(git push --force:*),Bash(git push -f:*),Bash(git push --delete:*),Bash(git push -d:*),Bash(git push --mirror:*),Bash(git push --tags:*),Bash(git push --all:*),Bash(git push origin +*),Bash(git push -u origin +*)"
+            --allowedTools "Bash(Rscript -e 'lintr::lint*'),Bash(Rscript -e 'devtools::check*'),Bash(Rscript -e 'devtools::document*'),Bash(Rscript -e 'pkgdown::build*'),Bash(quarto render:*),Bash(quarto check:*),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git show:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git add:*),Bash(git commit:*),Bash(git push origin:*),Bash(git push -u origin:*),Bash(gh api repos/${{ github.repository }}/:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr create:*),Bash(gh pr edit:*),Bash(gh issue view:*)" --disallowedTools "Bash(git push --force:*),Bash(git push -f:*),Bash(git push --delete:*),Bash(git push -d:*),Bash(git push --mirror:*),Bash(git push --tags:*),Bash(git push --all:*),Bash(git push origin +*),Bash(git push -u origin +*),Bash(gh api -X:*),Bash(gh api --method:*)"
 
       # Fetch the PR's head SHA once, post-Claude, for the two steps that
       # both need it (the prose-post COMMITTED check and the re-request

@@ -111,6 +111,7 @@ means the next reviewer has to re-ask.
 
 - Re-check the timeline (and, on a PR, the inline review-thread comments) for
   newer messages directed at you.
-- Address any in-chronological-order, then look again, until none remain.
-- If comments keep arriving, say so in your closing reply and stop rather than
-  looping indefinitely.
+- Address any in chronological order, then look again, until none remain.
+- If comments keep arriving, stop after roughly five passes (mirroring the
+  cap in `claude.yml`), say so in your closing reply, and don't loop
+  indefinitely.
