@@ -25,11 +25,12 @@
 # (issue #73). The concurrency block serializes runs, so a comment posted
 # while a session is active gets absorbed by that session via polling — but
 # that comment ALSO queued its own run. To stop the queued run from
-# re-handling it, the session marks each absorbed comment with a
-# github-actions 🚀 reaction, and the "Skip if this comment was already
-# handled" step makes a run bail when its triggering comment already carries
-# that marker. (Review-submission triggers have no reactions endpoint, so
-# that one case can still double up; it degrades to the pre-dedup behavior.)
+# re-handling it, Claude lists the comments it absorbed in a
+# `<!-- claude-absorbed: id ... -->` marker, a post-step reacts 🚀 to each
+# (with GITHUB_TOKEN), and the "Skip if this comment was already handled" step
+# makes a run bail when its triggering comment already carries that reaction.
+# (Review-submission triggers have no reactions endpoint, so that one case can
+# still double up; it degrades to the pre-dedup behavior.)
 #
 # Project guidance for Claude lives in CLAUDE.md at the repo root.
 
@@ -308,20 +309,23 @@ jobs:
 
             4. Every late comment you address in step 3 also queued its OWN
                run of this workflow (one fires per @claude comment). To stop
-               that duplicate run from re-handling what you just did, mark
-               each absorbed comment with a 🚀 reaction — a pre-step in the
-               duplicate run sees the marker and skips itself. Use the `id`
-               from the polling response, and the endpoint matching where the
-               comment came from:
+               those duplicate runs from re-handling what you just did, **end
+               your final message with a one-line marker listing the numeric
+               `id`s of the comments you absorbed by polling** (the `id` field
+               from the polling response — NOT the comment that triggered
+               you):
                ```
-               gh api repos/${{ github.repository }}/issues/comments/<id>/reactions -f content=rocket   # a /issues/N/comments entry
-               gh api repos/${{ github.repository }}/pulls/comments/<id>/reactions  -f content=rocket   # a /pulls/N/comments entry
+               <!-- claude-absorbed: 123456 789012 -->
                ```
-               (Do NOT mark the comment/review that originally triggered YOU
-               — only the late ones you picked up by polling. Review
-               submissions from `/pulls/N/reviews` have no reactions
-               endpoint, so leave those unmarked; their duplicate run just
-               proceeds as before.)
+               Space-separate the ids; emit the marker only if you absorbed at
+               least one. A post-step reacts 🚀 to each id with the workflow
+               token (which can actually write the reaction), and the dedup
+               pre-step in each duplicate run then sees the 🚀 and skips
+               itself. Do NOT try to add the reaction yourself — just emit the
+               marker; the post-step is what makes it reliable. (Review
+               submissions from `/pulls/N/reviews` have no reactions endpoint,
+               so a late review submission can't be marked and its run just
+               proceeds.)
 
           # Allowed git/gh/quarto/Rscript commands. `git push` is narrowed to
           # `origin` and destructive flag/refspec variants are denied so the
@@ -343,15 +347,14 @@ jobs:
           # Because the prefix is anchored at `gh api repos/`, the flag-first
           # write form (`gh api -X POST repos/...`) does NOT match this allow
           # rule and is denied. The two `gh api -X` / `--method` entries in
-          # disallowedTools below also deny that form explicitly. The
-          # URL-first write form (`gh api repos/<repo>/... -f field=val`,
-          # which `gh` sends as POST) DOES match and is intentionally relied
-          # on by the dedup marker in the prompt above (`gh api
-          # repos/<repo>/issues|pulls/comments/<id>/reactions -f
-          # content=rocket`). Allowed-tools can't filter by HTTP method or by
-          # flags past the prefix, so any other URL-first write to this repo
-          # is reachable too — the real bound there is the GITHUB_TOKEN scopes
-          # plus the trusted-author gate in the job `if:` above.
+          # disallowedTools below also deny that form explicitly. Claude
+          # uses `gh api repos/<repo>/...` only for READS here (the polling
+          # GETs); the dedup 🚀 reaction is written by a post-step with
+          # GITHUB_TOKEN, not by Claude (see #95 — Claude's sandboxed reaction
+          # call couldn't get the write through). A URL-first write (`gh api
+          # repos/<repo>/... -f field=val`) would still match this allow rule,
+          # so the real bound on writes is the GITHUB_TOKEN scopes plus the
+          # trusted-author gate in the job `if:` above.
           claude_args: |
             --allowedTools "Bash(Rscript -e 'lintr::lint*'),Bash(Rscript -e 'devtools::check*'),Bash(Rscript -e 'devtools::document*'),Bash(Rscript -e 'pkgdown::build*'),Bash(quarto render:*),Bash(quarto check:*),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git show:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git add:*),Bash(git commit:*),Bash(git push origin:*),Bash(git push -u origin:*),Bash(gh api repos/${{ github.repository }}/:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr create:*),Bash(gh pr edit:*),Bash(gh issue view:*)" --disallowedTools "Bash(git push --force:*),Bash(git push -f:*),Bash(git push --delete:*),Bash(git push -d:*),Bash(git push --mirror:*),Bash(git push --tags:*),Bash(git push --all:*),Bash(git push origin +*),Bash(git push -u origin +*),Bash(gh api -X:*),Bash(gh api --method:*)"
 
@@ -377,6 +380,42 @@ jobs:
       # that to the dedicated reviewer — posting here too would double up.
       # The PR-context guard keeps `@claude review` on a plain issue from
       # falling into the skip (no PR to dispatch a review for).
+      # Mark the comments Claude absorbed via polling with a 🚀 reaction so
+      # the duplicate run each of them queued skips itself (the dedup pre-step
+      # looks for this reaction). Claude emits the absorbed ids in a
+      # `<!-- claude-absorbed: id ... -->` marker; we react here with
+      # GITHUB_TOKEN, which — unlike Claude's sandboxed `gh` calls — can
+      # reliably POST the reaction. Fail-open: if the marker is absent or a
+      # reaction fails, the duplicate run simply proceeds (never a drop). #95
+      - name: React to comments Claude absorbed via polling
+        if: always() && steps.claude.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          EXECUTION_FILE: ${{ steps.claude.outputs.execution_file }}
+        run: |
+          FILE="${EXECUTION_FILE:-/home/runner/work/_temp/claude-execution-output.json}"
+          [ -f "$FILE" ] || { echo "No execution file; nothing to mark."; exit 0; }
+          TEXT=$(jq -rs '
+            flatten(1)
+            | [.[] | select(type == "object" and .type == "assistant")] | last
+            | (.message.content // []) | map(select(.type == "text") | .text) | join("\n")
+          ' < "$FILE")
+          # Pull ids out of the `<!-- claude-absorbed: ... -->` marker.
+          IDS=$(printf '%s' "$TEXT" | grep -oE '<!-- *claude-absorbed:[0-9 ]*-->' | grep -oE '[0-9]+' | sort -u)
+          [ -z "$IDS" ] && { echo "No claude-absorbed marker; nothing to mark."; exit 0; }
+          for id in $IDS; do
+            # A comment id is either an issue comment or a PR review comment;
+            # try the issue endpoint first, fall back to the pulls endpoint.
+            if gh api -X POST "repos/$REPO/issues/comments/$id/reactions" -f content=rocket >/dev/null 2>&1; then
+              echo "reacted 🚀 to issue comment $id"
+            elif gh api -X POST "repos/$REPO/pulls/comments/$id/reactions" -f content=rocket >/dev/null 2>&1; then
+              echo "reacted 🚀 to PR review comment $id"
+            else
+              echo "::warning::could not react to comment $id (deleted, or not a comment id)"
+            fi
+          done
+
       - name: Post Claude's response if no code was committed
         if: |
           always() &&
