@@ -14,14 +14,22 @@
 #     replies (questions/reviews) that agent mode would otherwise discard.
 #   - "Dispatch claude-code-review.yml on @claude review" routes review
 #     requests to the dedicated reviewer instead of self-reviewing.
+#   - "Skip if this comment was already handled by an active run" dedups a
+#     late comment that a still-running session already absorbed (see below).
 # Ported from d-morrison/rme (#788/#794/#805); adapted to qwt's lighter
 # setup (DESCRIPTION-based deps, no renv; no submodule-token URL rewrite).
 #
 # The `prompt:` also has Claude poll for late-arriving @claude comments
 # (issue/PR comment + PR review endpoints) before declaring done, so a
 # follow-up posted mid-run is handled in-session rather than dropped
-# (issue #73). The concurrency block serializes runs, but a queued run can
-# still re-handle a comment the active run already absorbed.
+# (issue #73). The concurrency block serializes runs, so a comment posted
+# while a session is active gets absorbed by that session via polling — but
+# that comment ALSO queued its own run. To stop the queued run from
+# re-handling it, the session marks each absorbed comment with a
+# github-actions 🚀 reaction, and the "Skip if this comment was already
+# handled" step makes a run bail when its triggering comment already carries
+# that marker. (Review-submission triggers have no reactions endpoint, so
+# that one case can still double up; it degrades to the pre-dedup behavior.)
 #
 # Project guidance for Claude lives in CLAUDE.md at the repo root.
 
@@ -75,12 +83,60 @@ jobs:
                             # routing silently fails)
 
     steps:
+      # Dedup: a late @claude comment that an already-running session
+      # absorbed (via the polling step in the prompt) still spawned its own
+      # run, now queued behind the active one by the concurrency group. The
+      # active session marks each comment it absorbs with a github-actions
+      # 🚀 reaction; this step makes the queued run skip itself when its
+      # triggering comment already carries that marker, so the comment isn't
+      # handled twice. Every later step is gated on `skip != 'true'`.
+      #
+      # Only comment events can carry a reaction, so this runs for
+      # `issue_comment` / `pull_request_review_comment` only; for
+      # `issues:opened` and `pull_request_review` the step is skipped, the
+      # output is empty (`!= 'true'`), and the run proceeds normally.
+      #
+      # The marker must be from github-actions[bot] — only this repo's
+      # GITHUB_TOKEN can author that reaction, so a random user can't
+      # suppress a run by hand-reacting 🚀. On any API error we default to
+      # NOT skipping (fail open), since a wrongful skip would drop the
+      # request — the exact failure mode issue #73 exists to prevent.
+      - name: Skip if this comment was already handled by an active run
+        id: dedup
+        # Fail open: a shell-level error here must not fail the job (that
+        # would block the run instead of degrading to the pre-dedup
+        # duplicate-run behavior). The `|| echo 0` handles gh-api errors;
+        # this covers anything else.
+        continue-on-error: true
+        if: github.event_name == 'issue_comment' || github.event_name == 'pull_request_review_comment'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request_review_comment" ]; then
+            ENDPOINT="repos/$REPO/pulls/comments/$COMMENT_ID/reactions"
+          else
+            ENDPOINT="repos/$REPO/issues/comments/$COMMENT_ID/reactions"
+          fi
+          MARKED=$(gh api "$ENDPOINT" \
+            --jq '[.[] | select(.content == "rocket" and .user.login == "github-actions[bot]")] | length' \
+            2>/dev/null || echo 0)
+          if [ "$MARKED" != "0" ]; then
+            echo "Comment $COMMENT_ID already carries the 🚀 handled-marker; skipping this duplicate run."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       # Post a visible acknowledgment BEFORE the multi-minute R/Quarto
       # setup begins, so the user knows the @claude mention was received.
       # `continue-on-error` keeps a transient comment-API hiccup from
       # failing the whole run. Posted by github-actions[bot], so it does
       # not re-trigger this workflow (the if: gate keys on `@claude`).
       - name: Acknowledge @claude mention
+        if: steps.dedup.outputs.skip != 'true'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -91,12 +147,14 @@ jobs:
             --body ":eyes: Picked up by [workflow run #${{ github.run_id }}]($RUN_URL). R/Quarto setup runs first; Claude itself responds after that."
 
       - name: Checkout repository
+        if: steps.dedup.outputs.skip != 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
           submodules: recursive
 
       - name: Set up Quarto
+        if: steps.dedup.outputs.skip != 'true'
         uses: quarto-dev/quarto-actions/setup@v2
         with:
           tinytex: true
@@ -104,10 +162,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: r-lib/actions/setup-r@v2
+        if: steps.dedup.outputs.skip != 'true'
         with:
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
+        if: steps.dedup.outputs.skip != 'true'
         with:
           packages: |
             any::knitr
@@ -118,7 +178,9 @@ jobs:
       # the post-steps can tell whether Claude pushed new commits.
       - name: Capture PR head SHA before Claude
         id: head_before
-        if: github.event.pull_request.number || github.event.issue.pull_request
+        if: |
+          steps.dedup.outputs.skip != 'true' &&
+          (github.event.pull_request.number || github.event.issue.pull_request)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -136,8 +198,11 @@ jobs:
       - name: Set up branch for issue trigger
         id: issue_branch
         if: |
-          github.event_name == 'issues' ||
-          (github.event_name == 'issue_comment' && !github.event.issue.pull_request)
+          steps.dedup.outputs.skip != 'true' &&
+          (
+            github.event_name == 'issues' ||
+            (github.event_name == 'issue_comment' && !github.event.issue.pull_request)
+          )
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
@@ -149,6 +214,7 @@ jobs:
 
       - name: Run Claude Code
         id: claude
+        if: steps.dedup.outputs.skip != 'true'
         uses: anthropics/claude-code-action@v1
         # GH_TOKEN authenticates the `gh` commands granted in claude_args
         # (gh pr create/edit/view); without it `gh` prompts and fails in CI.
@@ -240,6 +306,23 @@ jobs:
                with comments still arriving, note it in your final message
                and stop; the next queued run picks up from there.
 
+            4. Every late comment you address in step 3 also queued its OWN
+               run of this workflow (one fires per @claude comment). To stop
+               that duplicate run from re-handling what you just did, mark
+               each absorbed comment with a 🚀 reaction — a pre-step in the
+               duplicate run sees the marker and skips itself. Use the `id`
+               from the polling response, and the endpoint matching where the
+               comment came from:
+               ```
+               gh api repos/${{ github.repository }}/issues/comments/<id>/reactions -f content=rocket   # a /issues/N/comments entry
+               gh api repos/${{ github.repository }}/pulls/comments/<id>/reactions  -f content=rocket   # a /pulls/N/comments entry
+               ```
+               (Do NOT mark the comment/review that originally triggered YOU
+               — only the late ones you picked up by polling. Review
+               submissions from `/pulls/N/reviews` have no reactions
+               endpoint, so leave those unmarked; their duplicate run just
+               proceeds as before.)
+
           # Allowed git/gh/quarto/Rscript commands. `git push` is narrowed to
           # `origin` and destructive flag/refspec variants are denied so the
           # write-scoped token can't rewrite or delete refs. `Rscript -e` is
@@ -260,12 +343,15 @@ jobs:
           # Because the prefix is anchored at `gh api repos/`, the flag-first
           # write form (`gh api -X POST repos/...`) does NOT match this allow
           # rule and is denied. The two `gh api -X` / `--method` entries in
-          # disallowedTools below also deny that form explicitly. What this
-          # still can't pattern-block is a URL-first write that appends a
-          # method/field flag AFTER the URL (`gh api repos/<repo>/... -X
-          # POST`), since allowed-tools can't filter by HTTP method or by
-          # flags past the prefix — there, the real bound is the
-          # GITHUB_TOKEN scopes plus the trusted-author gate in the job `if:`.
+          # disallowedTools below also deny that form explicitly. The
+          # URL-first write form (`gh api repos/<repo>/... -f field=val`,
+          # which `gh` sends as POST) DOES match and is intentionally relied
+          # on by the dedup marker in the prompt above (`gh api
+          # repos/<repo>/issues|pulls/comments/<id>/reactions -f
+          # content=rocket`). Allowed-tools can't filter by HTTP method or by
+          # flags past the prefix, so any other URL-first write to this repo
+          # is reachable too — the real bound there is the GITHUB_TOKEN scopes
+          # plus the trusted-author gate in the job `if:` above.
           claude_args: |
             --allowedTools "Bash(Rscript -e 'lintr::lint*'),Bash(Rscript -e 'devtools::check*'),Bash(Rscript -e 'devtools::document*'),Bash(Rscript -e 'pkgdown::build*'),Bash(quarto render:*),Bash(quarto check:*),Bash(git diff:*),Bash(git log:*),Bash(git status:*),Bash(git show:*),Bash(git checkout:*),Bash(git switch:*),Bash(git branch:*),Bash(git add:*),Bash(git commit:*),Bash(git push origin:*),Bash(git push -u origin:*),Bash(gh api repos/${{ github.repository }}/:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr create:*),Bash(gh pr edit:*),Bash(gh issue view:*)" --disallowedTools "Bash(git push --force:*),Bash(git push -f:*),Bash(git push --delete:*),Bash(git push -d:*),Bash(git push --mirror:*),Bash(git push --tags:*),Bash(git push --all:*),Bash(git push origin +*),Bash(git push -u origin +*),Bash(gh api -X:*),Bash(gh api --method:*)"
 
@@ -274,7 +360,10 @@ jobs:
       # step). PR-context only; mirrors the before-step above.
       - name: Capture PR head SHA after Claude
         id: head_after
-        if: always() && (github.event.pull_request.number || github.event.issue.pull_request)
+        if: |
+          always() &&
+          steps.dedup.outputs.skip != 'true' &&
+          (github.event.pull_request.number || github.event.issue.pull_request)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -291,6 +380,7 @@ jobs:
       - name: Post Claude's response if no code was committed
         if: |
           always() &&
+          steps.dedup.outputs.skip != 'true' &&
           steps.claude.outcome == 'success' &&
           !(
             (
@@ -390,6 +480,7 @@ jobs:
       - name: Dispatch claude-code-review.yml on @claude review comment
         if: |
           always() &&
+          steps.dedup.outputs.skip != 'true' &&
           (github.event.pull_request.number || github.event.issue.pull_request) &&
           (
             contains(github.event.comment.body, '@claude review') ||
@@ -408,7 +499,11 @@ jobs:
       # human reviewer via the requested_reviewers API — qwt has no
       # standing-reviewer convention; add that here if one is adopted.)
       - name: Dispatch code review if Claude pushed commits
-        if: always() && (github.event.pull_request.number || github.event.issue.pull_request) && steps.head_before.outputs.sha != ''
+        if: |
+          always() &&
+          steps.dedup.outputs.skip != 'true' &&
+          (github.event.pull_request.number || github.event.issue.pull_request) &&
+          steps.head_before.outputs.sha != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SHA_BEFORE: ${{ steps.head_before.outputs.sha }}
@@ -432,6 +527,7 @@ jobs:
       - name: Push branch and open draft PR for issue trigger
         if: |
           always() &&
+          steps.dedup.outputs.skip != 'true' &&
           steps.issue_branch.outputs.branch != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
