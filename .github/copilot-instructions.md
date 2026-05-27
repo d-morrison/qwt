@@ -101,3 +101,16 @@ Before requesting review or marking work as complete:
 - **Fix any rendering issues** before requesting review.
 
 This ensures reviewers see working, polished output rather than discovering basic rendering problems.
+
+### Check for Late-Arriving Comments
+
+Before declaring an agent session complete, re-read the issue/PR thread for
+comments that were posted *after* the request you started on. A follow-up or
+correction can land while you're working, and ending the session without it
+means the next reviewer has to re-ask.
+
+- Re-check the timeline (and, on a PR, the inline review-thread comments) for
+  newer messages directed at you.
+- Address any in-chronological-order, then look again, until none remain.
+- If comments keep arriving, say so in your closing reply and stop rather than
+  looping indefinitely.
