@@ -17,6 +17,10 @@ website:
   title: "Quarto Website Template"
   site-url: https://ucd-serg.github.io/qwt/
   description: "A template for creating websites with Quarto"
+  # Generate llms.txt + per-page .llms.md for LLM-friendly consumption
+  # (https://quarto.org/docs/websites/website-llms.html). Key is `llms-txt`,
+  # not `llms`.
+  llms-txt: true
   page-footer:
     center: "Built with [Quarto](https://quarto.org/)"
   back-to-top-navigation: true
