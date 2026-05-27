@@ -103,6 +103,11 @@ jobs:
       # request — the exact failure mode issue #73 exists to prevent.
       - name: Skip if this comment was already handled by an active run
         id: dedup
+        # Fail open: a shell-level error here must not fail the job (that
+        # would block the run instead of degrading to the pre-dedup
+        # duplicate-run behavior). The `|| echo 0` handles gh-api errors;
+        # this covers anything else.
+        continue-on-error: true
         if: github.event_name == 'issue_comment' || github.event_name == 'pull_request_review_comment'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
