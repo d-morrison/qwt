@@ -173,7 +173,9 @@ jobs:
       # the post-steps can tell whether Claude pushed new commits.
       - name: Capture PR head SHA before Claude
         id: head_before
-        if: (github.event.pull_request.number || github.event.issue.pull_request) && steps.dedup.outputs.skip != 'true'
+        if: |
+          steps.dedup.outputs.skip != 'true' &&
+          (github.event.pull_request.number || github.event.issue.pull_request)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -349,7 +351,10 @@ jobs:
       # step). PR-context only; mirrors the before-step above.
       - name: Capture PR head SHA after Claude
         id: head_after
-        if: always() && steps.dedup.outputs.skip != 'true' && (github.event.pull_request.number || github.event.issue.pull_request)
+        if: |
+          always() &&
+          steps.dedup.outputs.skip != 'true' &&
+          (github.event.pull_request.number || github.event.issue.pull_request)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -472,7 +477,11 @@ jobs:
       # human reviewer via the requested_reviewers API — qwt has no
       # standing-reviewer convention; add that here if one is adopted.)
       - name: Dispatch code review if Claude pushed commits
-        if: always() && steps.dedup.outputs.skip != 'true' && (github.event.pull_request.number || github.event.issue.pull_request) && steps.head_before.outputs.sha != ''
+        if: |
+          always() &&
+          steps.dedup.outputs.skip != 'true' &&
+          (github.event.pull_request.number || github.event.issue.pull_request) &&
+          steps.head_before.outputs.sha != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SHA_BEFORE: ${{ steps.head_before.outputs.sha }}
