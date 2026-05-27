@@ -16,8 +16,9 @@ context of the motivating application.** Extract a minimal, self-contained
 reproduction of the phenomenon, iterate candidate fixes on *that* (a fast,
 clean loop), then port the working fix back to the real code.
 
-Reference: <https://r4ds.hadley.nz/workflow-help.html#making-a-reprex>. The
-payoff is real: ~80% of the time, the act of building a thorough reprex
+Reference: <https://r4ds.hadley.nz/workflow-help.html#making-a-reprex>.
+The payoff is real:
+~80% of the time, the act of building a thorough reprex
 surfaces the cause on its own — the noise you strip away was hiding it.
 
 ## When this fires
@@ -106,8 +107,9 @@ but nothing more.
   - Validation bonus: because `reprex()` runs in a fresh session, if it errors
     on a missing object or package, your example wasn't actually
     self-contained — fix that before sharing.
-- When the bug might be **version-dependent**, capture `sessionInfo()` (or
-  run `tidyverse_update()`) in the reprex so versions are part of the record.
+- When the bug might be **version-dependent**,
+  capture `sessionInfo()` or `sessioninfo::session_info()` output in the reprex
+  so versions travel with the report.
 - Build artifacts (`_site/`, `_freeze/`, `.quarto/`) are common confounders
   for "it renders differently" bugs — a clean standalone render sidesteps
   stale freeze caches.
