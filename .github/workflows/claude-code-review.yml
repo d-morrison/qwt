@@ -75,6 +75,26 @@ jobs:
                             # "App token exchange failed: 401 Unauthorized")
 
     steps:
+      # A PR that changes THIS workflow file can't be reviewed by the action:
+      # its App-token exchange requires the review workflow to match the
+      # default branch, so it 401s ("Workflow validation failed … must have
+      # identical content to the … default branch") — the action itself says
+      # this is normal and to ignore it. Rather than post a failing check,
+      # detect that case and skip the review; it runs normally once merged.
+      - name: Skip self-review when the PR edits this workflow
+        id: selfmod
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          files=$(gh api "repos/$REPO/pulls/$PR_NUMBER/files" --paginate --jq '.[].filename' 2>/dev/null || true)
+          if printf '%s\n' "$files" | grep -qx '.github/workflows/claude-code-review.yml'; then
+            echo "self_mod=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::PR #$PR_NUMBER edits claude-code-review.yml — skipping self-review (the action 401s on workflow validation until merged; it runs after merge)."
+          else
+            echo "self_mod=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -82,6 +102,7 @@ jobs:
           submodules: recursive
 
       - name: Claude PR review
+        if: steps.selfmod.outputs.self_mod != 'true'
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
