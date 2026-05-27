@@ -388,7 +388,10 @@ jobs:
       # reliably POST the reaction. Fail-open: if the marker is absent or a
       # reaction fails, the duplicate run simply proceeds (never a drop). #95
       - name: React to comments Claude absorbed via polling
-        if: always() && steps.claude.outcome == 'success'
+        if: |
+          always() &&
+          steps.dedup.outputs.skip != 'true' &&
+          steps.claude.outcome == 'success'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
