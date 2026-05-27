@@ -135,6 +135,14 @@ jobs:
             don't restate each inline comment there. Skip generic praise — be
             concrete. If the PR looks clean, say so briefly.
 
+            When you post findings, end the top-level summary with one
+            **🔧 Fix all findings →** link (complementing the per-finding
+            "Fix this →" links) so the author can address everything in one
+            shot. Build it as a `claude.ai/code` deep link — URL-encode the
+            query text:
+            `https://claude.ai/code?q=<url-encoded: Address every finding in the latest @claude review of ${{ github.repository }} PR #${{ env.PR_NUMBER }}.>&repo=${{ github.repository }}`
+            Omit the link when the PR is clean (nothing to fix).
+
           # `gh pr comment` is narrowed to `create` so the reviewer can post
           # a top-level summary but can't edit or delete prior review
           # comments (each run leaves a fresh comment; history stays).
