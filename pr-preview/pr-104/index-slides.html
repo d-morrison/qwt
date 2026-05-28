@@ -223,6 +223,9 @@
       position: fixed;
       bottom: 8px;
       left: 8px;
+      /* Matches reveal.js's `.slide-number` and the `#revealjs-html-link` chip
+         from `revealjs-html-links.lua`; the three elements occupy different
+         corners so they don't overlap. Keep them aligned if you bump this. */
       z-index: 31;
       width: 2rem;
       height: 2rem;
@@ -289,8 +292,9 @@
     }
 
     function init() {
-      applyTheme(initialTheme());
       if (document.getElementById("qwt-theme-toggle")) return;
+      var theme = initialTheme();
+      applyTheme(theme); // set body class early (button doesn't exist yet, so this only paints the body)
       var btn = document.createElement("button");
       btn.id = "qwt-theme-toggle";
       btn.type = "button";
@@ -299,7 +303,7 @@
         applyTheme(currentTheme() === "dark" ? "light" : "dark");
       });
       document.body.appendChild(btn);
-      applyTheme(currentTheme());
+      applyTheme(theme); // now that the button exists, populate its glyph/aria-pressed
     }
 
     if (document.readyState === "loading") {
@@ -320,7 +324,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">Last modified: 2026-05-28 00:05:27 (PDT)</p>
+  <p class="date">Last modified: 2026-05-28 00:10:07 (PDT)</p>
 </section>
 <section>
 <section id="welcome" class="title-slide slide level1 unnumbered center">
