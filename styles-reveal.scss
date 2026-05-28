@@ -16,6 +16,9 @@
   --qwt-heading: #000;
   --qwt-link: #2a76dd;
   --qwt-link-hover: #6ca0e8;
+  // 0.99 (not 1) is a deliberate carryover from reveal.js's `simple` theme:
+  // some browsers render fully-opaque selections on a different compositing
+  // path, so the upstream theme uses 0.99. We keep it for consistency.
   --qwt-selection-bg: rgba(0, 0, 0, 0.99);
   --qwt-selection-fg: #fff;
   --qwt-border: rgba(0, 0, 0, 0.2);
