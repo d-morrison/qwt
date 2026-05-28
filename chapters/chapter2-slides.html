@@ -116,7 +116,7 @@
     div.csl-indent {
       margin-left: 2em;
     }  </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-0427d8d92a431aa6a6430e53ec02a470.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-8ad4261df090a1f6df0398ca91f93312.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -209,6 +209,110 @@
       margin-right: 0; 
     }
   </style>
+  <!--
+    Light/dark toggle button for the qwt revealjs format.
+    Pulled into every slide deck via the `include-in-header` entry in the
+    `revealjs:` block of `_quarto-website.yml`. Pairs with
+    `styles-reveal.scss` (which defines the palette CSS variables) — the
+    button reads those vars so it stays legible in both modes. Persists
+    the choice in localStorage; first-time visitors get
+    `prefers-color-scheme` as the default.
+  -->
+  <style>
+    #qwt-theme-toggle {
+      position: fixed;
+      bottom: 8px;
+      left: 8px;
+      /* Matches reveal.js's `.slide-number` and the `#revealjs-html-link` chip
+         from `revealjs-html-links.lua`; the three elements occupy different
+         corners so they don't overlap. Keep them aligned if you bump this. */
+      z-index: 31;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      border: 1px solid var(--qwt-border, rgba(0, 0, 0, 0.2));
+      border-radius: 50%;
+      background: var(--qwt-chip-bg, rgba(255, 255, 255, 0.8));
+      color: var(--qwt-muted, rgba(0, 0, 0, 0.5));
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, background 0.15s, border-color 0.15s;
+    }
+    #qwt-theme-toggle:hover {
+      color: var(--qwt-fg, rgba(0, 0, 0, 0.9));
+      background: var(--qwt-chip-bg-hover, rgba(255, 255, 255, 0.98));
+      border-color: var(--qwt-fg, rgba(0, 0, 0, 0.4));
+    }
+    #qwt-theme-toggle:focus-visible {
+      outline: 2px solid var(--qwt-link, #2a76dd);
+      outline-offset: 2px;
+    }
+  </style>
+  <script>
+  (function () {
+    "use strict";
+    var STORAGE_KEY = "qwt-reveal-theme";
+    var DARK_CLASS = "qwt-dark";
+    var SUN = "☀";       // ☀
+    var MOON = "☾";      // ☾
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.body.classList.add(DARK_CLASS);
+      } else {
+        document.body.classList.remove(DARK_CLASS);
+      }
+      try { localStorage.setItem(STORAGE_KEY, theme); } catch (e) { /* private mode */ }
+      var btn = document.getElementById("qwt-theme-toggle");
+      if (btn) {
+        var dark = (theme === "dark");
+        btn.setAttribute("aria-pressed", dark ? "true" : "false");
+        btn.title = dark ? "Switch to light mode" : "Switch to dark mode";
+        btn.textContent = dark ? SUN : MOON;
+      }
+    }
+
+    function currentTheme() {
+      return document.body.classList.contains(DARK_CLASS) ? "dark" : "light";
+    }
+
+    function initialTheme() {
+      try {
+        var stored = localStorage.getItem(STORAGE_KEY);
+        if (stored === "dark" || stored === "light") return stored;
+      } catch (e) { /* private mode */ }
+      if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        return "dark";
+      }
+      return "light";
+    }
+
+    function init() {
+      if (document.getElementById("qwt-theme-toggle")) return;
+      var theme = initialTheme();
+      applyTheme(theme); // set body class early (button doesn't exist yet, so this only paints the body)
+      var btn = document.createElement("button");
+      btn.id = "qwt-theme-toggle";
+      btn.type = "button";
+      btn.setAttribute("aria-label", "Toggle light/dark mode");
+      btn.addEventListener("click", function () {
+        applyTheme(currentTheme() === "dark" ? "light" : "dark");
+      });
+      document.body.appendChild(btn);
+      applyTheme(theme); // now that the button exists, populate its glyph/aria-pressed
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init);
+    } else {
+      init();
+    }
+  })();
+  </script>
 </head>
 <body class="quarto-light">
   <div class="reveal">
@@ -220,7 +324,7 @@
 <div class="quarto-title-authors">
 </div>
 
-  <p class="date">Last modified: 2026-05-27 00:06:33 (PDT)</p>
+  <p class="date">Last modified: 2026-05-28 00:41:26 (PDT)</p>
 </section>
 <section class="slide level2">
 
@@ -462,18 +566,18 @@ window.addEventListener("load", alignEquationAnchorsWithDefault);
     "  line-height: 1;",
     "}",
     "#revealjs-html-link a {",
-    "  color: rgba(0, 0, 0, 0.5);",
+    "  color: var(--qwt-muted, rgba(0, 0, 0, 0.5));",
     "  text-decoration: none;",
-    "  border: 1px solid rgba(0, 0, 0, 0.2);",
+    "  border: 1px solid var(--qwt-border, rgba(0, 0, 0, 0.2));",
     "  padding: 4px 8px;",
     "  border-radius: 4px;",
-    "  background: rgba(255, 255, 255, 0.8);",
-    "  transition: color 0.15s, background 0.15s;",
+    "  background: var(--qwt-chip-bg, rgba(255, 255, 255, 0.8));",
+    "  transition: color 0.15s, background 0.15s, border-color 0.15s;",
     "}",
     "#revealjs-html-link a:hover {",
-    "  color: rgba(0, 0, 0, 0.9);",
-    "  background: rgba(255, 255, 255, 0.98);",
-    "  border-color: rgba(0, 0, 0, 0.4);",
+    "  color: var(--qwt-fg, rgba(0, 0, 0, 0.9));",
+    "  background: var(--qwt-chip-bg-hover, rgba(255, 255, 255, 0.98));",
+    "  border-color: var(--qwt-fg, rgba(0, 0, 0, 0.4));",
     "}"
   ].join("\n");
 
