@@ -6,6 +6,8 @@
 *.docx
 *.epub
 *.html
+# Source HTML partials we intentionally track (not build output).
+!qwt-reveal-toggle.html
 *_files/
 site_libs/
 
