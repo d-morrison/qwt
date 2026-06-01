@@ -521,9 +521,19 @@ jobs:
 
       # Pair to "Set up branch for issue trigger": push the branch Claude
       # committed to and open a draft PR. Runs on always() so partial work
-      # is preserved even if the Claude step failed. qwt's checkout uses the
-      # persisted GITHUB_TOKEN (no submodule-token URL rewrite), so a plain
-      # `git push origin` authenticates — no token-bearing URL needed.
+      # is preserved even if the Claude step failed.
+      #
+      # The push uses an explicit token-bearing URL rather than relying on
+      # the credentials actions/checkout persists. The claude-code-action
+      # step that runs before this rewrites the repo's git auth config when
+      # it sets up its own credentials, leaving the main repo with no
+      # `http.https://github.com/.extraheader` — so a plain `git push origin`
+      # falls back to empty credentials and fails with "Password
+      # authentication is not supported" (run 26650131764). GITHUB_TOKEN has
+      # `contents: write` from the permissions block above, so it can push;
+      # note GitHub deliberately does NOT fire downstream workflows on a push
+      # authenticated by GITHUB_TOKEN, which is why the review is dispatched
+      # explicitly via `gh workflow run` below rather than left to a trigger.
       - name: Push branch and open draft PR for issue trigger
         if: |
           always() &&
@@ -551,7 +561,7 @@ jobs:
             exit 0
           fi
           echo "Pushing $BRANCH ($STARTING_SHA -> $CURRENT_SHA)"
-          git push origin "$BRANCH"
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$BRANCH"
           EXISTING=$(gh pr list --head "$BRANCH" --state open --json url --jq '.[0].url // empty')
           if [ -n "$EXISTING" ]; then
             echo "PR already exists for $BRANCH: $EXISTING"
