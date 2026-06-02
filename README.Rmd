@@ -57,6 +57,8 @@ To verify Quarto is installed:
 quarto --version
 ```
 
+**Minimum version:** This template uses Quarto's [`llms-txt`](https://quarto.org/docs/websites/website-llms.html) website option, which requires **Quarto 1.9.36 or newer** (the version this template was verified on). Earlier Quarto versions do not recognize `llms-txt` as a valid `website:` property and will produce a schema error when rendering.
+
 ### Customize your website
 
 1. **Edit `_quarto-website.yml`** to update:
