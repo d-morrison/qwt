@@ -662,14 +662,9 @@ jobs:
               --body "$PR_BODY")
             echo "Opened draft PR: $PR_URL"
             PR_VERB="opened draft PR"
-            # Issue #105: request the repository owner as a reviewer on the
-            # freshly-opened PR so Claude's drafts land in their review queue.
-            # Done as a separate `gh pr edit` (not a `--reviewer` flag on
-            # `gh pr create`) so a reviewer-request failure — e.g. the owner
-            # is an org rather than a user, or happens to be the PR author —
-            # degrades to a warning instead of failing PR creation. Uses
-            # `github.repository_owner` so the request follows the repo into
-            # downstream books created from this template.
+            # Issue #105: request the repo owner as a reviewer. Separate from
+            # `gh pr create` so a failure (e.g. owner is an org) degrades to a
+            # warning rather than failing PR creation.
             gh pr edit "$PR_URL" --add-reviewer "${{ github.repository_owner }}" \
               || echo "::warning::Could not request ${{ github.repository_owner }} as a reviewer on $PR_URL."
           fi
