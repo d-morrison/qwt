@@ -81,7 +81,6 @@ jobs:
         if: ${{ !contains(github.event.pull_request.labels.*.name, 'clear-freezer') }}
         run: python3 .github/scripts/clear-changed-freezer.py
         env:
-          FREEZE_DIR: _freeze
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
 
       - name: Render HTML
