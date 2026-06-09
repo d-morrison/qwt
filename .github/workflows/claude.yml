@@ -662,6 +662,11 @@ jobs:
               --body "$PR_BODY")
             echo "Opened draft PR: $PR_URL"
             PR_VERB="opened draft PR"
+            # Issue #105: request the repo owner as a reviewer. Separate from
+            # `gh pr create` so a failure (e.g. owner is an org) degrades to a
+            # warning rather than failing PR creation.
+            gh pr edit "$PR_URL" --add-reviewer "${{ github.repository_owner }}" \
+              || echo "::warning::Could not request ${{ github.repository_owner }} as a reviewer on $PR_URL."
           fi
           # Dispatch a review on the new commits, for both the freshly-opened
           # and the already-exists (idempotent re-run) paths. The review's
