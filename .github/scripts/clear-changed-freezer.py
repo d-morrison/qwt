@@ -33,6 +33,7 @@ BASE_SHA   : base branch commit to diff against (the PR base SHA). When
 
 import os
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -67,16 +68,20 @@ def changed_files(base_sha):
 def resolve_includes(qmd_path, _seen=None):
     """Recursively collect the files a `.qmd` page depends on.
 
-    Returns repo-relative POSIX paths: the page itself plus every file it
-    pulls in through `{{< include ... >}}`, resolved relative to the
-    including file's directory. Cycles and missing targets are tolerated.
+    Returns absolute, resolved ``Path`` objects: the page itself plus every
+    file it pulls in through `{{< include ... >}}`, resolved relative to the
+    including file's directory. Cycles and missing targets are tolerated;
+    missing/deleted targets are still recorded (so deleting an included
+    subfile clears the parent's freezer) but not recursed into.
     """
     if _seen is None:
         _seen = set()
     qmd_path = qmd_path.resolve()
-    if qmd_path in _seen or not qmd_path.is_file():
+    if qmd_path in _seen:
         return _seen
     _seen.add(qmd_path)
+    if not qmd_path.is_file():
+        return _seen
 
     try:
         text = qmd_path.read_text(encoding="utf-8")
@@ -145,7 +150,7 @@ def main():
         )
         print(f"Clearing freezer for {rel} (changed: {', '.join(changed_deps)})")
         # Remove the page's freezer tree so Quarto re-executes it.
-        subprocess.run(["rm", "-rf", str(target)], check=True)
+        shutil.rmtree(target)
         cleared.append(str(rel))
 
     if cleared:
