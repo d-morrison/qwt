@@ -70,6 +70,19 @@ jobs:
             ${{ runner.os }}-quarto-freezer-main-
             ${{ runner.os }}-quarto-freezer-
 
+      # By default, clear the restored freezer only for pages whose own source
+      # or included subfiles changed in this PR, so those pages re-execute
+      # while everything else reuses its cached freeze. Quarto's `freeze: auto`
+      # only re-runs a page when its *own* file hash changes, so without this a
+      # page that pulls in a changed `{{< include >}}` subfile would render
+      # stale. Skipped when the 'clear-freezer' label is set, since that path
+      # already skips the restore above and rebuilds the whole freezer.
+      - name: Clear freezer for changed pages
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'clear-freezer') }}
+        run: python3 .github/scripts/clear-changed-freezer.py
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+
       - name: Render HTML
         uses: quarto-dev/quarto-actions/render@v2
         with:
