@@ -39,7 +39,8 @@ import sys
 from pathlib import Path
 
 # {{< include path >}} / {{< include "path" >}} / {{< include 'path' >}}
-INCLUDE_RE = re.compile(r"""\{\{<\s*include\s+["']?([^"'>\s]+)["']?\s*>}}""")
+# Three capture groups: double-quoted, single-quoted, unquoted.
+INCLUDE_RE = re.compile(r"""\{\{<\s*include\s+(?:"([^"]+)"|'([^']+)'|([^"'>\s]+))\s*>}}""")
 
 
 def run_git(args):
@@ -89,7 +90,7 @@ def resolve_includes(qmd_path, _seen=None):
         return _seen
 
     for match in INCLUDE_RE.finditer(text):
-        included = (qmd_path.parent / match.group(1)).resolve()
+        included = (qmd_path.parent / (match.group(1) or match.group(2) or match.group(3))).resolve()
         resolve_includes(included, _seen)
     return _seen
 
