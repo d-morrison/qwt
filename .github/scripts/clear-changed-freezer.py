@@ -90,7 +90,8 @@ def resolve_includes(qmd_path, _seen=None):
         return _seen
 
     for match in INCLUDE_RE.finditer(text):
-        included = (qmd_path.parent / (match.group(1) or match.group(2) or match.group(3))).resolve()
+        rel_path = match.group(1) or match.group(2) or match.group(3)
+        included = (qmd_path.parent / rel_path).resolve()
         resolve_includes(included, _seen)
     return _seen
 
