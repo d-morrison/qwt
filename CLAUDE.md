@@ -10,15 +10,18 @@ Authoritative style guide: [UCD-SERG Lab Manual](https://ucd-serg.github.io/lab-
 
 ## Repository layout
 
-- `index.qmd`, `chapters/`, `appendix-*.qmd` — Quarto source pages
+- `index.qmd`, `chapters/`, `appendix-*.qmd`, `references.qmd` — Quarto source pages
 - `_quarto.yml`, `_quarto-website.yml` — Quarto project + website config
 - `_extensions/` — vendored Quarto extensions
 - `macros/` — git submodule for shortcode/macro definitions (see `.gitmodules`)
 - `R/`, `man/`, `DESCRIPTION`, `NAMESPACE` — the project is also a small R package
 - `references.bib` — BibTeX bibliography
-- `styles.css` — site styling
+- `styles.css` — website styling; `styles-reveal.scss`, `qwt-reveal-toggle.html`, and the `revealjs-*.lua` filters drive the reveal.js slide output
+- `assets/`, `images/` — static assets used by pages and docs
 - `.github/workflows/` — CI workflow definitions
 - `.github/scripts/` — helper scripts used by workflows
+- `.github/instructions/` — path-scoped Copilot rules that attach by file glob (see `.github/copilot-instructions.md`)
+- `CONTRIBUTING.md` — contributor guide
 - `_site/`, `_freeze/`, `.quarto/` — build artifacts (do not edit by hand)
 
 ## Style conventions
@@ -37,12 +40,14 @@ Mirrors [`.github/copilot-instructions.md`](.github/copilot-instructions.md). Ke
 - **Submodules**: `macros/` is the only git submodule (see `.gitmodules`). Run `git submodule update --init --recursive` after cloning.
 - **Spell check**: words go in `inst/WORDLIST` (see `.github/workflows/check-spelling.yaml`). Update the wordlist instead of disabling the check.
 - **Link check**: tuned in `lychee.toml`; prefer fixing broken links over adding exceptions.
+- **Other CI checks**: workflows also verify bibliography DOIs (`check-bibliography-dois.yml`) and flag non-standard characters (`check-non-standard-chars.yaml`). Fix the flagged source rather than relaxing the check.
+- **Dependencies**: Dependabot auto-updates the `macros` submodule and GitHub Actions (see `.github/dependabot.yml`); don't bump those by hand unless a PR needs it.
 
 ## Pull request expectations
 
 - Keep PRs scoped — bug fixes shouldn't smuggle in refactors.
 - Write commit messages and PR descriptions explaining the *why*, not just the *what*.
-- Don't bypass CI failures (spell check, link check, lint) — fix the underlying issue.
+- Don't bypass CI failures (spell check, link check, lint, bibliography DOIs, non-standard chars) — fix the underlying issue.
 - Don't commit `_site/` or `_freeze/` changes unless that is genuinely the intent of the PR.
 
 ## Things to avoid
