@@ -241,7 +241,6 @@ Validates that all books and articles in bibliography files meet DOI requirement
     ├── scripts/             # Scripts for workflows
     │   ├── add-home-banner.py
     │   ├── apply-rulesets.sh    # Apply branch rulesets to a new repo
-    │   ├── check-bibliography-dois.R
     │   ├── create-docx-tracked-changes.py
     │   ├── detect-changed-chapters.py
     │   ├── highlight-html-changes.py

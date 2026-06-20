@@ -258,7 +258,6 @@ ensures all citations are properly traceable.
         ├── scripts/             # Scripts for workflows
         │   ├── add-home-banner.py
         │   ├── apply-rulesets.sh    # Apply branch rulesets to a new repo
-        │   ├── check-bibliography-dois.R
         │   ├── create-docx-tracked-changes.py
         │   ├── detect-changed-chapters.py
         │   ├── highlight-html-changes.py
