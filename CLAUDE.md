@@ -10,7 +10,10 @@ Authoritative style guide: [UCD-SERG Lab Manual](https://ucd-serg.github.io/lab-
 
 ## Repository layout
 
-- `index.qmd`, `chapters/`, `appendix-*.qmd`, `references.qmd` — Quarto source pages
+- `index.qmd`, `chapters/`, `appendix-*.qmd` — Quarto source pages
+- `references.qmd` — standalone reference page; excluded from the default website
+  render (`!references.qmd` in `_quarto-website.yml`), so it isn't part of the
+  normal site build
 - `_quarto.yml`, `_quarto-website.yml` — Quarto project + website config
 - `_extensions/` — vendored Quarto extensions
 - `macros/` — git submodule for shortcode/macro definitions (see `.gitmodules`)
