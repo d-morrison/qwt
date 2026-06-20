@@ -1,5 +1,10 @@
 name: Check Non-Standard Characters
 
+# Thin caller for the shared reusable workflow in d-morrison/gha.
+# The reusable workflow (and its bundled composite) reproduce the previous
+# standalone behavior: detect curly quotes / en/em dashes in .qmd and .R files.
+# See https://github.com/d-morrison/gha for inputs and versioning.
+
 on:
   push:
     branches:
@@ -9,19 +14,5 @@ on:
       - main
 
 jobs:
-  check-chars:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-      
-      - name: Check for non-standard characters
-        run: python3 .github/scripts/check-non-standard-chars.py
+  check:
+    uses: d-morrison/gha/.github/workflows/check-non-standard-chars.yml@v1
