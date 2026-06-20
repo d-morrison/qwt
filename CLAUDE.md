@@ -20,7 +20,7 @@ Authoritative style guide: [UCD-SERG Lab Manual](https://ucd-serg.github.io/lab-
 - `R/`, `man/`, `DESCRIPTION`, `NAMESPACE` — the project is also a small R package
 - `references.bib` — BibTeX bibliography
 - `styles.css` — website styling; `styles-reveal.scss`, `qwt-reveal-toggle.html`, and the `revealjs-*.lua` filters drive the reveal.js slide output
-- `assets/`, `images/` — static assets used by pages and docs
+- `assets/`, `images/` — static image and asset files (site pages, docs, CI/PR screenshots)
 - `.github/workflows/` — CI workflow definitions
 - `.github/scripts/` — helper scripts used by workflows
 - `.github/instructions/` — path-scoped Copilot rules that attach by file glob (see `.github/copilot-instructions.md`)
