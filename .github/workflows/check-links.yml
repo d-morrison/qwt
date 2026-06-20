@@ -19,7 +19,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  check:
+  # Keep the job id (link-checker) matching the previous standalone workflow so
+  # the status-check context name doesn't change.
+  link-checker:
     permissions:
       contents: read
       issues: write

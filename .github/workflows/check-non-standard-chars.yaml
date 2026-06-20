@@ -14,5 +14,10 @@ on:
       - main
 
 jobs:
-  check:
+  # Keep the job id (check-chars) matching the previous standalone workflow so
+  # the status-check context name doesn't change. Re-declare the least-privilege
+  # token the standalone job had; the reusable workflow only needs contents:read.
+  check-chars:
+    permissions:
+      contents: read
     uses: d-morrison/gha/.github/workflows/check-non-standard-chars.yml@v1
