@@ -16,9 +16,9 @@ First, parse `$ARGUMENTS`: the first whitespace-delimited token is the **slug**
 Steps:
 
 1. Create `chapters/<slug>.qmd` with YAML frontmatter holding just `title:` (set
-   to the title). Do NOT set `date:` — `_quarto-website.yml` sets
+   to the title). Do NOT set `date:` --- `_quarto-website.yml` sets
    `date: last-modified` globally, and a per-page `date:` would override it and
-   freeze the date. Do NOT add a top-level `#` heading in the body — Quarto
+   freeze the date. Do NOT add a top-level `#` heading in the body --- Quarto
    renders the frontmatter `title:` as the page heading, so a `#` heading would
    duplicate it.
 2. Add an entry for the new chapter to the `website.navbar.left` "Chapters" menu
@@ -31,4 +31,4 @@ Style rules (from CLAUDE.md):
 
 - Blank line before every bullet list
 - Chunk options via `#|` directives, not inline `r, opt = val`
-- `code-fold: true` only when the output — not the code — is the point
+- `code-fold: true` only when the output --- not the code --- is the point
