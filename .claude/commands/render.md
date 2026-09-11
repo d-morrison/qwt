@@ -14,4 +14,4 @@ Report:
 - A summary of which output formats were produced
 
 If the build fails, diagnose the root cause and suggest a fix before asking to proceed.
-Do not commit `_site/`, `_freeze/`, or `.quarto/` — those are build artifacts.
+Do not commit `_site/`, `_freeze/`, or `.quarto/` --- those are build artifacts.

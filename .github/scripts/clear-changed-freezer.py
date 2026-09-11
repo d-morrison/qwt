@@ -18,7 +18,7 @@ This script closes that gap. It diffs the PR against its base branch, maps
 each page to the set of files it depends on (itself plus its includes,
 resolved recursively), and removes the `_freeze` directory only for pages
 whose file or subfiles actually changed. Everything else keeps its cached
-freeze, so this stays cheap — it only forces re-execution of the pages that
+freeze, so this stays cheap --- it only forces re-execution of the pages that
 genuinely need it. The full-rebuild escape hatch (the `clear-freezer` PR
 label, which skips the cache restore entirely) is unchanged; this step is
 skipped when that label is present.
